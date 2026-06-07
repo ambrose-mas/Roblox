@@ -546,22 +546,19 @@ refreshBtn.MouseButton1Click:Connect(function()
     end)
 end)
 
--- Thực thi lệnh Teleport (Chống StreamingEnabled, chống giật văng)
+-- Thực thi lệnh Teleport
 tpBtn.MouseButton1Click:Connect(function()
     local targetName = tpDropdownBtn.Text
     local targetPlayer = game.Players:FindFirstChild(targetName)
     
     if targetPlayer and targetPlayer.Character then
-        -- GetPivot() lấy toạ độ chuẩn xác tuyệt đối dù mục tiêu ở rất xa chưa được load CFrame vật lý
         local targetCFrame = targetPlayer.Character:GetPivot()
         local myRoot = getTargetRoot()
         
         if targetCFrame and myRoot then
-            -- Set vận tốc về 0 để xoá bỏ lực đẩy đọng lại, tránh giật lag hay văng sau khi dịch chuyển
             myRoot.AssemblyLinearVelocity = Vector3.zero
             myRoot.AssemblyAngularVelocity = Vector3.zero
             
-            -- Dịch chuyển an toàn ra phía sau và cao lên 1 chút để không kẹt
             myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
             
             tpBtn.Text = "Teleported!"
@@ -578,15 +575,19 @@ tpBtn.MouseButton1Click:Connect(function()
 end)
 -----------------------------------------------------------
 
+-- ĐÃ SỬA: ĐỒNG BỘ VỊ TRÍ NÚT MINI VÀ BẢNG MENU -----------
 miniBtn.MouseButton1Click:Connect(function()
+    miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
     frame.Visible = false
     miniIcon.Visible = true
 end)
 
 miniIcon.MouseButton1Click:Connect(function()
+    frame.Position = miniIcon.Position -- Mở bảng ra đúng vị trí nút sấm sét đang đứng
     frame.Visible = true
     miniIcon.Visible = false
 end)
+-----------------------------------------------------------
 
 closeBtn.MouseButton1Click:Connect(function()
     enabled = false
