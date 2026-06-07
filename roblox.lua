@@ -17,9 +17,9 @@ local function addCorner(parent, radius)
     corner.Parent = parent
 end
 
--- MAIN FRAME (Đã thu gọn siêu mượt và bo góc)
+-- MAIN FRAME
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 330)
+frame.Size = UDim2.new(0, 240, 0, 430)
 frame.Position = UDim2.new(0, 100, 0, 100)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
@@ -205,6 +205,58 @@ noclipToggle.TextColor3 = Color3.new(1, 1, 1)
 noclipToggle.Parent = frame
 addCorner(noclipToggle, 6)
 
+-- DROPDOWN TELEPORT (Y: 335)
+local tpDropdownBtn = Instance.new("TextButton")
+tpDropdownBtn.Size = UDim2.new(0.85, 0, 0, 30)
+tpDropdownBtn.Position = UDim2.new(0.075, 0, 0, 335)
+tpDropdownBtn.Text = "Chọn người chơi..."
+tpDropdownBtn.Font = Enum.Font.Gotham
+tpDropdownBtn.TextSize = 12
+tpDropdownBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+tpDropdownBtn.TextColor3 = Color3.new(1, 1, 1)
+tpDropdownBtn.Parent = frame
+addCorner(tpDropdownBtn, 6)
+
+-- NÚT REFRESH (Y: 380, bên trái)
+local refreshBtn = Instance.new("TextButton")
+refreshBtn.Size = UDim2.new(0.4, 0, 0, 30)
+refreshBtn.Position = UDim2.new(0.075, 0, 0, 380)
+refreshBtn.Text = "Refresh"
+refreshBtn.Font = Enum.Font.GothamSemibold
+refreshBtn.TextSize = 12
+refreshBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+refreshBtn.TextColor3 = Color3.new(1, 1, 1)
+refreshBtn.Parent = frame
+addCorner(refreshBtn, 6)
+
+-- NÚT TELEPORT (Y: 380, bên phải)
+local tpBtn = Instance.new("TextButton")
+tpBtn.Size = UDim2.new(0.4, 0, 0, 30)
+tpBtn.Position = UDim2.new(0.525, 0, 0, 380)
+tpBtn.Text = "Teleport"
+tpBtn.Font = Enum.Font.GothamSemibold
+tpBtn.TextSize = 12
+tpBtn.BackgroundColor3 = Color3.fromRGB(150, 80, 50)
+tpBtn.TextColor3 = Color3.new(1, 1, 1)
+tpBtn.Parent = frame
+addCorner(tpBtn, 6)
+
+-- KHUNG DANH SÁCH CUỘN (SCROLLING FRAME)
+local playerListFrame = Instance.new("ScrollingFrame")
+playerListFrame.Size = UDim2.new(0.85, 0, 0, 100)
+playerListFrame.Position = UDim2.new(0.075, 0, 0, 368)
+playerListFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+playerListFrame.BorderSizePixel = 0
+playerListFrame.Visible = false
+playerListFrame.ZIndex = 10
+playerListFrame.ScrollBarThickness = 4
+playerListFrame.Parent = frame
+addCorner(playerListFrame, 6)
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Parent = playerListFrame
+listLayout.SortOrder = Enum.SortOrder.Name
+
 -- ================= LOGIC BIẾN & HÀM ================= --
 local enabled = false
 local speedValue = 16
@@ -230,17 +282,15 @@ local function getHumanoid()
     end
 end
 
--- TÍNH NĂNG MỚI: Lấy gốc tọa độ vật thể nếu đang ngồi
+-- Lấy gốc tọa độ vật thể nếu đang ngồi
 local function getTargetRoot()
     local char = player.Character
     if not char then return nil end
     local hum = char:FindFirstChild("Humanoid")
     
     if hum and hum.SeatPart then
-        -- Trả về thân gốc của xe/vật thể đang ngồi
         return hum.SeatPart.AssemblyRootPart or hum.SeatPart
     end
-    -- Nếu đi bộ, trả về thân nhân vật
     return char:FindFirstChild("HumanoidRootPart")
 end
 
@@ -275,11 +325,9 @@ local function startFly()
     local root = getTargetRoot()
     if not root then return end
     
-    -- Tự động cập nhật BodyVelocity vào vật thể/nhân vật hiện tại
     if not flyVelocity or flyVelocity.Parent ~= root then
         if flyVelocity then pcall(function() flyVelocity:Destroy() end) end
         flyVelocity = Instance.new("BodyVelocity")
-        -- Đã nâng MaxForce lên 1e6 để đủ sức kéo theo các phương tiện
         flyVelocity.MaxForce = Vector3.new(1,1,1) * 1e6
         flyVelocity.Parent = root
     end
@@ -332,7 +380,6 @@ makeDraggable(miniIcon, miniIcon)
 local loopConnection
 local noclipConnection
 
--- RenderStepped xử lý Speed, Fly và Weight
 loopConnection = RunService.RenderStepped:Connect(function()
     local hum = getHumanoid()
     if hum then
@@ -368,19 +415,16 @@ loopConnection = RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Stepped xử lý Noclip (Xuyên tường cho cả nhân vật & phương tiện)
 noclipConnection = RunService.Stepped:Connect(function()
     if noclipEnabled then
         local char = player.Character
         if char then
-            -- Tắt va chạm cho nhân vật
             for _, part in pairs(char:GetDescendants()) do
                 if part:IsA("BasePart") then
                     part.CanCollide = false
                 end
             end
             
-            -- Tắt va chạm cho vật thể/phương tiện đang ngồi
             local hum = char:FindFirstChild("Humanoid")
             if hum and hum.SeatPart then
                 for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
@@ -436,7 +480,6 @@ noclipToggle.MouseButton1Click:Connect(function()
     if not noclipEnabled then
         local char = player.Character
         if char then
-            -- Phục hồi va chạm nhân vật
             local partsToReset = {"HumanoidRootPart", "Head", "Torso", "UpperTorso", "LowerTorso"}
             for _, name in ipairs(partsToReset) do
                 local part = char:FindFirstChild(name)
@@ -445,7 +488,6 @@ noclipToggle.MouseButton1Click:Connect(function()
                 end
             end
             
-            -- Phục hồi va chạm phương tiện nếu có
             local hum = char:FindFirstChild("Humanoid")
             if hum and hum.SeatPart then
                 for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
@@ -457,6 +499,84 @@ noclipToggle.MouseButton1Click:Connect(function()
         end
     end
 end)
+
+-- LOGIC DROPDOWN TELEPORT ĐƯỢC TỐI ƯU HÓA ----------------
+local function updatePlayerList()
+    for _, child in pairs(playerListFrame:GetChildren()) do
+        if child:IsA("TextButton") then child:Destroy() end
+    end
+    
+    local yOffset = 0
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= player then
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(1, 0, 0, 25)
+            btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            btn.Text = "  " .. p.Name
+            btn.TextColor3 = Color3.new(1, 1, 1)
+            btn.Font = Enum.Font.Gotham
+            btn.TextSize = 12
+            btn.TextXAlignment = Enum.TextXAlignment.Left
+            btn.BorderSizePixel = 0
+            btn.ZIndex = 11
+            btn.Parent = playerListFrame
+            
+            btn.MouseButton1Click:Connect(function()
+                tpDropdownBtn.Text = p.Name
+                playerListFrame.Visible = false
+            end)
+            
+            yOffset = yOffset + 25
+        end
+    end
+    playerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
+end
+
+tpDropdownBtn.MouseButton1Click:Connect(function()
+    playerListFrame.Visible = not playerListFrame.Visible
+    if playerListFrame.Visible then updatePlayerList() end
+end)
+
+refreshBtn.MouseButton1Click:Connect(function()
+    updatePlayerList()
+    tpDropdownBtn.Text = "Chọn người chơi..."
+    refreshBtn.Text = "Updated!"
+    task.delay(1, function()
+        if refreshBtn then refreshBtn.Text = "Refresh" end
+    end)
+end)
+
+-- Thực thi lệnh Teleport (Chống StreamingEnabled, chống giật văng)
+tpBtn.MouseButton1Click:Connect(function()
+    local targetName = tpDropdownBtn.Text
+    local targetPlayer = game.Players:FindFirstChild(targetName)
+    
+    if targetPlayer and targetPlayer.Character then
+        -- GetPivot() lấy toạ độ chuẩn xác tuyệt đối dù mục tiêu ở rất xa chưa được load CFrame vật lý
+        local targetCFrame = targetPlayer.Character:GetPivot()
+        local myRoot = getTargetRoot()
+        
+        if targetCFrame and myRoot then
+            -- Set vận tốc về 0 để xoá bỏ lực đẩy đọng lại, tránh giật lag hay văng sau khi dịch chuyển
+            myRoot.AssemblyLinearVelocity = Vector3.zero
+            myRoot.AssemblyAngularVelocity = Vector3.zero
+            
+            -- Dịch chuyển an toàn ra phía sau và cao lên 1 chút để không kẹt
+            myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
+            
+            tpBtn.Text = "Teleported!"
+            task.delay(1, function()
+                if tpBtn then tpBtn.Text = "Teleport" end
+            end)
+        end
+    else
+        tpBtn.Text = "Target Loading!"
+        task.delay(1.5, function()
+            if tpBtn then tpBtn.Text = "Teleport" end
+        end)
+    end
+end)
+-----------------------------------------------------------
 
 miniBtn.MouseButton1Click:Connect(function()
     frame.Visible = false
