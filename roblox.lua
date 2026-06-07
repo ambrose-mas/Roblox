@@ -98,14 +98,14 @@ toggleBtn.Parent = frame
 addCorner(toggleBtn, 6)
 
 local sliderBar = Instance.new("Frame")
-sliderBar.Size = UDim2.new(0.85, 0, 0, 6) -- Căn thanh mỏng gọn
+sliderBar.Size = UDim2.new(0.85, 0, 0, 6)
 sliderBar.Position = UDim2.new(0.075, 0, 0, 85)
 sliderBar.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
 sliderBar.Parent = frame
 addCorner(sliderBar, 100)
 
 local slider = Instance.new("Frame")
-slider.Size = UDim2.new(0, 16, 0, 16) -- Tròn xoe
+slider.Size = UDim2.new(0, 16, 0, 16)
 slider.Position = UDim2.new(0, -8, 0.5, -8)
 slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 slider.Parent = sliderBar
@@ -193,7 +193,7 @@ flyText.TextColor3 = Color3.fromRGB(200, 200, 200)
 flyText.Text = "Fly Speed: 50"
 flyText.Parent = frame
 
--- NOCLIP (Y: 285 - Căn đúng bằng lề các nút trên)
+-- NOCLIP (Y: 285)
 local noclipToggle = Instance.new("TextButton")
 noclipToggle.Size = UDim2.new(0.85, 0, 0, 30)
 noclipToggle.Position = UDim2.new(0.075, 0, 0, 285) 
@@ -205,7 +205,7 @@ noclipToggle.TextColor3 = Color3.new(1, 1, 1)
 noclipToggle.Parent = frame
 addCorner(noclipToggle, 6)
 
--- ================= LOGIC BIẾN & HÀM (GIỮ NGUYÊN 100%) ================= --
+-- ================= LOGIC BIẾN & HÀM ================= --
 local enabled = false
 local speedValue = 16
 local draggingSlider = false
@@ -230,15 +230,31 @@ local function getHumanoid()
     end
 end
 
-local function applyWeight()
+-- TÍNH NĂNG MỚI: Lấy gốc tọa độ vật thể nếu đang ngồi
+local function getTargetRoot()
     local char = player.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
+    if not char then return nil end
+    local hum = char:FindFirstChild("Humanoid")
+    
+    if hum and hum.SeatPart then
+        -- Trả về thân gốc của xe/vật thể đang ngồi
+        return hum.SeatPart.AssemblyRootPart or hum.SeatPart
+    end
+    -- Nếu đi bộ, trả về thân nhân vật
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+local function applyWeight()
+    local root = getTargetRoot()
     if not root then return end
     
     if not weightForce or weightForce.Parent ~= root then
         if weightForce then pcall(function() weightForce:Destroy() end) end
-        local att = Instance.new("Attachment", root)
+        local att = root:FindFirstChild("WeightAttachment")
+        if not att then
+            att = Instance.new("Attachment", root)
+            att.Name = "WeightAttachment"
+        end
         weightForce = Instance.new("VectorForce")
         weightForce.Attachment0 = att
         weightForce.RelativeTo = Enum.ActuatorRelativeTo.World
@@ -256,15 +272,15 @@ local function removeWeight()
 end
 
 local function startFly()
-    local char = player.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
+    local root = getTargetRoot()
     if not root then return end
     
+    -- Tự động cập nhật BodyVelocity vào vật thể/nhân vật hiện tại
     if not flyVelocity or flyVelocity.Parent ~= root then
         if flyVelocity then pcall(function() flyVelocity:Destroy() end) end
         flyVelocity = Instance.new("BodyVelocity")
-        flyVelocity.MaxForce = Vector3.new(1,1,1)*1e5
+        -- Đã nâng MaxForce lên 1e6 để đủ sức kéo theo các phương tiện
+        flyVelocity.MaxForce = Vector3.new(1,1,1) * 1e6
         flyVelocity.Parent = root
     end
 end
@@ -279,10 +295,7 @@ end
 -- ================= KÉO THẢ UI ================= --
 local function makeDraggable(dragHandle, targetFrame)
     targetFrame = targetFrame or dragHandle
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+    local dragging, dragInput, dragStart, startPos
 
     dragHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -331,26 +344,23 @@ loopConnection = RunService.RenderStepped:Connect(function()
     if flyEnabled then
         startFly() 
         if flyVelocity then
-            local char = player.Character
-            if char then
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if root then
-                    local cam = workspace.CurrentCamera
-                    local dir = Vector3.zero
-                    
-                    if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
-                    
-                    dir += Vector3.new(0, moveY, 0)
-                    
-                    if dir.Magnitude > 0 then
-                        dir = dir.Unit * flySpeed
-                    end
-                    
-                    flyVelocity.Velocity = dir
+            local root = getTargetRoot()
+            if root then
+                local cam = workspace.CurrentCamera
+                local dir = Vector3.zero
+                
+                if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
+                
+                dir += Vector3.new(0, moveY, 0)
+                
+                if dir.Magnitude > 0 then
+                    dir = dir.Unit * flySpeed
                 end
+                
+                flyVelocity.Velocity = dir
             end
         end
     else
@@ -358,14 +368,25 @@ loopConnection = RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Stepped xử lý Noclip
+-- Stepped xử lý Noclip (Xuyên tường cho cả nhân vật & phương tiện)
 noclipConnection = RunService.Stepped:Connect(function()
     if noclipEnabled then
         local char = player.Character
         if char then
+            -- Tắt va chạm cho nhân vật
             for _, part in pairs(char:GetDescendants()) do
                 if part:IsA("BasePart") then
                     part.CanCollide = false
+                end
+            end
+            
+            -- Tắt va chạm cho vật thể/phương tiện đang ngồi
+            local hum = char:FindFirstChild("Humanoid")
+            if hum and hum.SeatPart then
+                for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
                 end
             end
         end
@@ -384,7 +405,6 @@ UIS.InputEnded:Connect(function(input)
     end
 end)
 
--- Function đổi màu nút khi bật/tắt (Hiệu ứng)
 local function toggleColor(btn, state)
     btn.BackgroundColor3 = state and Color3.fromRGB(50, 150, 80) or Color3.fromRGB(70, 70, 70)
 end
@@ -416,6 +436,7 @@ noclipToggle.MouseButton1Click:Connect(function()
     if not noclipEnabled then
         local char = player.Character
         if char then
+            -- Phục hồi va chạm nhân vật
             local partsToReset = {"HumanoidRootPart", "Head", "Torso", "UpperTorso", "LowerTorso"}
             for _, name in ipairs(partsToReset) do
                 local part = char:FindFirstChild(name)
@@ -423,11 +444,20 @@ noclipToggle.MouseButton1Click:Connect(function()
                     part.CanCollide = true
                 end
             end
+            
+            -- Phục hồi va chạm phương tiện nếu có
+            local hum = char:FindFirstChild("Humanoid")
+            if hum and hum.SeatPart then
+                for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
         end
     end
 end)
 
--- EVENT NÚT THU GỌN VÀ NÚT TẮT
 miniBtn.MouseButton1Click:Connect(function()
     frame.Visible = false
     miniIcon.Visible = true
@@ -456,6 +486,14 @@ closeBtn.MouseButton1Click:Connect(function()
             local part = char:FindFirstChild(name)
             if part and part:IsA("BasePart") then
                 part.CanCollide = true
+            end
+        end
+        
+        if hum and hum.SeatPart then
+            for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
             end
         end
     end
