@@ -438,7 +438,20 @@ noclipConnection = RunService.Stepped:Connect(function()
 end)
 
 -- ================= ĐIỀU KHIỂN & SỰ KIỆN ================= --
-UIS.InputBegan:Connect(function(input)
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    -- Thêm chức năng tắt/bật bằng phím F5 hoặc Pause (bỏ qua khi đang chat/nhập chữ)
+    if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) and not gameProcessed then
+        if frame.Visible then
+            miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
+            frame.Visible = false
+            miniIcon.Visible = true
+        else
+            frame.Position = miniIcon.Position -- Mở bảng ra đúng vị trí nút sấm sét đang đứng
+            frame.Visible = true
+            miniIcon.Visible = false
+        end
+    end
+
     if input.KeyCode == Enum.KeyCode.Space then moveY = 1 end
     if input.KeyCode == Enum.KeyCode.LeftShift then moveY = -1 end
 end)
