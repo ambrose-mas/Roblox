@@ -403,7 +403,8 @@ end)
 
 -- ================= ĐIỀU KHIỂN & SỰ KIỆN ================= --
 UIS.InputBegan:Connect(function(input, gameProcessed)
-    if input.KeyCode == Enum.KeyCode.Pause and not gameProcessed then
+    -- Thêm F5 bên cạnh Pause để tắt/bật bảng menu
+    if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) and not gameProcessed then
         if frame.Visible then
             miniIcon.Position = frame.Position
             frame.Visible = false
