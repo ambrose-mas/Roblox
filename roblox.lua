@@ -31,7 +31,7 @@ addCorner(frame, 8)
 local miniIcon = Instance.new("TextButton")
 miniIcon.Size = UDim2.new(0, 40, 0, 40)
 miniIcon.Position = UDim2.new(0, 100, 0, 100)
-miniIcon.Text = "⚡"
+miniIcon.Text = "🖕"
 miniIcon.TextSize = 20
 miniIcon.Visible = false
 miniIcon.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
