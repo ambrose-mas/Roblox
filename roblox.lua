@@ -572,7 +572,8 @@ tpBtn.MouseButton1Click:Connect(function()
             myRoot.AssemblyLinearVelocity = Vector3.zero
             myRoot.AssemblyAngularVelocity = Vector3.zero
             
-            myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
+            -- SỬA LẠI THÀNH DÒNG BÊN DƯỚI ĐỂ BAY THẲNG VÀO NGƯỜI MỤC TIÊU
+            myRoot.CFrame = targetCFrame
             
             tpBtn.Text = "Teleported!"
             task.delay(1, function()
