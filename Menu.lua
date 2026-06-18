@@ -44,7 +44,7 @@ addCorner(miniIcon, 8)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 35)
 title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.Text = "⚡ Speed Menu ⚡"
+title.Text = "⚡Ambrose⚡"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 14
 title.TextColor3 = Color3.new(1, 1, 1)
