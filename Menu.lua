@@ -358,15 +358,34 @@ loopConnection = RunService.RenderStepped:Connect(function()
             local root = getTargetRoot()
             if root then
                 local cam = workspace.CurrentCamera
+                
+                -- LOGIC ĐÃ SỬA LẠI: BAY GIỐNG MINECRAFT (CREATIVE MODE)
+                local look = cam.CFrame.LookVector
+                local right = cam.CFrame.RightVector
+                
+                -- Ép mặt phẳng (xóa trục Y) để W A S D chỉ di chuyển ngang
+                local flatLook = Vector3.new(look.X, 0, look.Z)
+                if flatLook.Magnitude > 0 then flatLook = flatLook.Unit end
+                
+                local flatRight = Vector3.new(right.X, 0, right.Z)
+                if flatRight.Magnitude > 0 then flatRight = flatRight.Unit end
+                
                 local dir = Vector3.zero
                 
-                if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.W) then dir += flatLook end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= flatLook end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= flatRight end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then dir += flatRight end
                 
+                -- Chuẩn hóa hướng di chuyển ngang (tránh đi chéo bị nhanh hơn)
+                if dir.Magnitude > 0 then
+                    dir = dir.Unit
+                end
+                
+                -- Cộng thêm chiều cao (Space/Shift) vào Vector cuối cùng
                 dir += Vector3.new(0, moveY, 0)
                 
+                -- Nhân với tốc độ bay
                 if dir.Magnitude > 0 then
                     dir = dir.Unit * flySpeed
                 end
@@ -403,7 +422,6 @@ end)
 
 -- ================= ĐIỀU KHIỂN & SỰ KIỆN ================= --
 UIS.InputBegan:Connect(function(input, gameProcessed)
-    -- Thêm F5 bên cạnh Pause để tắt/bật bảng menu
     if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) and not gameProcessed then
         if frame.Visible then
             miniIcon.Position = frame.Position
