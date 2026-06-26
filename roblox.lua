@@ -135,7 +135,6 @@ addCorner(miniBtn, 10)
 miniBtn.MouseEnter:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0, BackgroundColor3 = Colors.BtnHover}):Play() end)
 miniBtn.MouseLeave:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end)
 
--- Biến chứa danh sách dropdown để check tắt
 local playerListFrame = Instance.new("ScrollingFrame")
 
 -- ================= HỆ THỐNG TABS VỚI HIỆU ỨNG ================= --
@@ -178,7 +177,6 @@ tabProfileBtn.TextColor3 = Colors.TextSecondary
 tabProfileBtn.Parent = tabContainer
 addCorner(tabProfileBtn, 6)
 
--- Vùng chứa mượt mà cho các Pages
 local pagesContainer = Instance.new("Frame")
 pagesContainer.Size = UDim2.new(1, 0, 1, -100)
 pagesContainer.Position = UDim2.new(0, 0, 0, 100)
@@ -207,9 +205,7 @@ pageProfile.Parent = pagesContainer
 local pagesList = {pageMain, pageServer, pageProfile}
 local tabBtns = {tabMainBtn, tabServerBtn, tabProfileBtn}
 
--- Logic vuốt mượt mà (Sliding Animation)
 local function switchTab(index)
-    -- Tắt dropdown nếu nó đang hiển thị
     if playerListFrame and playerListFrame.Visible then
         playerListFrame.Visible = false
     end
@@ -217,11 +213,11 @@ local function switchTab(index)
     for i, p in ipairs(pagesList) do
         local targetPos
         if i < index then
-            targetPos = UDim2.new(-1, 0, 0, 0) -- Trượt sang trái
+            targetPos = UDim2.new(-1, 0, 0, 0)
         elseif i > index then
-            targetPos = UDim2.new(1, 0, 0, 0)  -- Trượt sang phải
+            targetPos = UDim2.new(1, 0, 0, 0)
         else
-            targetPos = UDim2.new(0, 0, 0, 0)  -- Nằm ở giữa
+            targetPos = UDim2.new(0, 0, 0, 0)
         end
         TS:Create(p, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = targetPos}):Play()
     end
@@ -303,14 +299,16 @@ local function createSlider(name, order, defaultVal, maxVal)
     handle.Parent = bar
     addCorner(handle, 100)
 
-    local txt = Instance.new("TextLabel")
+    -- SỬ DỤNG TEXTBOX THAY VÌ TEXTLABEL
+    local txt = Instance.new("TextBox")
     txt.Size = UDim2.new(0.25, 0, 1, 0)
     txt.Position = UDim2.new(0.75, 0, 0, 0)
     txt.BackgroundTransparency = 1
     txt.Font = Enum.Font.GothamSemibold
     txt.TextSize = 12
     txt.TextColor3 = Colors.TextSecondary
-    txt.Text = defaultVal
+    txt.Text = tostring(defaultVal)
+    txt.ClearTextOnFocus = false
     txt.Parent = frame
 
     return frame, bar, handle, txt
@@ -387,7 +385,6 @@ tpBtn.Parent = tpFrame
 addCorner(tpBtn, 6)
 applyHover(tpBtn, Colors.OrangeBtn, Colors.OrangeBtnHover)
 
--- Danh sách Dropdown Teleport (Khai báo lúc đầu, giờ set properties)
 playerListFrame.Size = UDim2.new(0.55, 0, 0, 120)
 playerListFrame.Position = UDim2.new(0.05, 0, 0, 380)
 playerListFrame.BackgroundColor3 = Colors.Title
@@ -654,7 +651,6 @@ miniIcon.MouseButton1Click:Connect(toggleMenu)
 
 -- ================= SỰ KIỆN PHÍM & CLICK OUTSIDE ================= --
 UIS.InputBegan:Connect(function(input, gameProcessed)
-    -- Gán phím cho chức năng
     if bindingTarget then
         if input.UserInputType == Enum.UserInputType.Keyboard then
             if input.KeyCode == Enum.KeyCode.Escape then
@@ -669,7 +665,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         return
     end
 
-    -- XỬ LÝ TỰ ĐỘNG TẮT DROPDOWN KHI CLICK RA NGOÀI
     if playerListFrame.Visible and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
         local pos = input.Position
         local dropMin = playerListFrame.AbsolutePosition
@@ -677,7 +672,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         local btnMin = tpDropdownBtn.AbsolutePosition
         local btnMax = btnMin + tpDropdownBtn.AbsoluteSize
         
-        -- Kiểm tra chuột có nằm trong Dropdown hoặc nút chọn không
         local inDrop = pos.X >= dropMin.X and pos.X <= dropMax.X and pos.Y >= dropMin.Y and pos.Y <= dropMax.Y
         local inBtn = pos.X >= btnMin.X and pos.X <= btnMax.X and pos.Y >= btnMin.Y and pos.Y <= btnMax.Y
         
@@ -694,7 +688,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             if input.KeyCode == keybinds["Noclip"] then toggleNoclipLogic() end
         end
 
-        -- Phím F5 Thu Gọn
         if (input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.F5) then
             toggleMenu()
         end
@@ -924,7 +917,7 @@ closeBtn.MouseButton1Click:Connect(function()
     task.delay(0.35, function() gui:Destroy() end)
 end)
 
--- ================= XỬ LÝ SLIDERS ================= --
+-- ================= XỬ LÝ SLIDERS (KÉO & NHẬP SỐ) ================= --
 speedBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingSlider = true end end)
 weightBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingWeight = true end end)
 flyBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingFly = true end end)
@@ -933,15 +926,15 @@ UIS.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         if draggingSlider then
             local p = math.clamp((input.Position.X - speedBar.AbsolutePosition.X)/speedBar.AbsoluteSize.X, 0, 1)
-            speedHandle.Position = UDim2.new(p, -8, 0.5, -8); speedValue = math.floor(p * 1000); speedTxt.Text = speedValue
+            speedHandle.Position = UDim2.new(p, -8, 0.5, -8); speedValue = math.floor(p * 1000); speedTxt.Text = tostring(speedValue)
         end
         if draggingWeight then
             local p = math.clamp((input.Position.X - weightBar.AbsolutePosition.X)/weightBar.AbsoluteSize.X, 0, 1)
-            weightHandle.Position = UDim2.new(p, -8, 0.5, -8); weightValue = math.floor(p * 1000); weightTxt.Text = weightValue
+            weightHandle.Position = UDim2.new(p, -8, 0.5, -8); weightValue = math.floor(p * 1000); weightTxt.Text = tostring(weightValue)
         end
         if draggingFly then
             local p = math.clamp((input.Position.X - flyBar.AbsolutePosition.X)/flyBar.AbsoluteSize.X, 0, 1)
-            flyHandle.Position = UDim2.new(p, -8, 0.5, -8); flySpeed = math.floor(p * 1000); flyTxt.Text = flySpeed
+            flyHandle.Position = UDim2.new(p, -8, 0.5, -8); flySpeed = math.floor(p * 1000); flyTxt.Text = tostring(flySpeed)
         end
     end
 end)
@@ -950,4 +943,32 @@ UIS.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         draggingSlider = false; draggingWeight = false; draggingFly = false
     end
+end)
+
+-- KHI NGƯỜI DÙNG NHẬP SỐ VÀO TEXTBOX
+speedTxt.FocusLost:Connect(function()
+    local num = tonumber(speedTxt.Text)
+    if not num then num = speedValue end
+    num = math.clamp(num, 0, 1000)
+    speedValue = math.floor(num)
+    speedTxt.Text = tostring(speedValue)
+    speedHandle.Position = UDim2.new(speedValue / 1000, -8, 0.5, -8)
+end)
+
+weightTxt.FocusLost:Connect(function()
+    local num = tonumber(weightTxt.Text)
+    if not num then num = weightValue end
+    num = math.clamp(num, 0, 1000)
+    weightValue = math.floor(num)
+    weightTxt.Text = tostring(weightValue)
+    weightHandle.Position = UDim2.new(weightValue / 1000, -8, 0.5, -8)
+end)
+
+flyTxt.FocusLost:Connect(function()
+    local num = tonumber(flyTxt.Text)
+    if not num then num = flySpeed end
+    num = math.clamp(num, 0, 1000)
+    flySpeed = math.floor(num)
+    flyTxt.Text = tostring(flySpeed)
+    flyHandle.Position = UDim2.new(flySpeed / 1000, -8, 0.5, -8)
 end)
