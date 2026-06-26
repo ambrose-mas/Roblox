@@ -1,39 +1,41 @@
 local player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local TS = game:GetService("TweenService") 
+local TS = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
 local playerGui = player:WaitForChild("PlayerGui")
 
--- ================= BẢNG MÀU PASTEL & DỊU MẮT ================= --
+-- ================= BẢNG MÀU SANG TRỌNG & RỰC RỠ (LUXURY THEME) ================= --
 local Colors = {
-    Background = Color3.fromRGB(30, 30, 46),       -- Xanh đen dịu
-    Title = Color3.fromRGB(24, 24, 37),            -- Đen xám đậm
-    BtnOff = Color3.fromRGB(49, 50, 68),           -- Xám nhẹ
-    BtnOn = Color3.fromRGB(166, 227, 161),         -- Xanh ngọc Pastel
-    BtnHover = Color3.fromRGB(69, 71, 90),         -- Xám sáng hơn
-    BtnOnHover = Color3.fromRGB(180, 245, 175),    -- Xanh ngọc sáng
-    Keybind = Color3.fromRGB(49, 50, 68),          
-    KeybindHover = Color3.fromRGB(69, 71, 90),     
-    SliderBg = Color3.fromRGB(69, 71, 90),         
-    SliderHandle = Color3.fromRGB(137, 180, 250),  -- Xanh dương Pastel
-    TextPrimary = Color3.fromRGB(205, 214, 244),   
-    TextSecondary = Color3.fromRGB(166, 173, 200), 
-    RedBtn = Color3.fromRGB(243, 139, 168),        
-    RedBtnHover = Color3.fromRGB(249, 168, 212),   
-    BlueBtn = Color3.fromRGB(137, 180, 250),       
-    BlueBtnHover = Color3.fromRGB(180, 203, 234),  
-    OrangeBtn = Color3.fromRGB(250, 179, 135),     
-    OrangeBtnHover = Color3.fromRGB(250, 211, 180) 
+    Background = Color3.fromRGB(24, 24, 30),       -- Xám đậm sang trọng
+    Title = Color3.fromRGB(15, 15, 20),            -- Đen ánh xanh sâu
+    BtnOff = Color3.fromRGB(40, 40, 48),           -- Xám kim loại
+    BtnOn = Color3.fromRGB(255, 190, 60),          -- Vàng kim (Gold) rực rỡ
+    BtnHover = Color3.fromRGB(55, 55, 65),         -- Xám sáng khi di chuột
+    BtnOnHover = Color3.fromRGB(255, 215, 100),    -- Vàng sáng chói
+    Keybind = Color3.fromRGB(35, 35, 42),          
+    KeybindHover = Color3.fromRGB(45, 45, 55),     
+    SliderBg = Color3.fromRGB(45, 45, 55),         
+    SliderHandle = Color3.fromRGB(255, 190, 60),   -- Kéo trượt màu vàng kim
+    TextPrimary = Color3.fromRGB(250, 250, 250),   -- Trắng tinh khiết
+    TextSecondary = Color3.fromRGB(160, 160, 170), -- Xám nhạt
+    RedBtn = Color3.fromRGB(255, 80, 80),          -- Đỏ san hô
+    RedBtnHover = Color3.fromRGB(255, 110, 110),   
+    BlueBtn = Color3.fromRGB(90, 170, 255),        -- Xanh thiên thanh sáng
+    BlueBtnHover = Color3.fromRGB(120, 190, 255),  
+    OrangeBtn = Color3.fromRGB(255, 120, 90),      -- Cam hoàng hôn rực
+    OrangeBtnHover = Color3.fromRGB(255, 145, 120) 
 }
 
 -- Tạo ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "SpeedMenu"
+gui.Name = "LuxurySpeedMenu"
 gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
--- HÀM HỖ TRỢ LÀM ĐẸP UI
+-- ================= HÀM HỖ TRỢ LÀM ĐẸP UI ================= --
 local function addCorner(parent, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius or 6)
@@ -46,6 +48,7 @@ local function applyHover(btn, colorNormal, colorHover, isToggle, getState)
         if isToggle and getState() then targetColor = Colors.BtnOnHover end
         TS:Create(btn, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
     end)
+   
     btn.MouseLeave:Connect(function()
         local targetColor = colorNormal
         if isToggle and getState() then targetColor = Colors.BtnOn end
@@ -55,19 +58,26 @@ end
 
 -- ================= MAIN FRAME ================= --
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 480) -- Tăng chiều cao để chứa Tab
-frame.Position = UDim2.new(0, 100, 0, 100)
+frame.Size = UDim2.new(0, 420, 0, 530)
+frame.Position = UDim2.new(0.5, -210, 0.5, -265)
 frame.BackgroundColor3 = Colors.Background
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.ClipsDescendants = true
 frame.Parent = gui
-addCorner(frame, 10)
+addCorner(frame, 12)
 
--- MINI BUTTON
+-- Đổ bóng (Glow mờ)
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Colors.BtnOn
+uiStroke.Transparency = 0.5
+uiStroke.Thickness = 1.5
+uiStroke.Parent = frame
+
+-- MINI BUTTON (Nút khi thu nhỏ)
 local miniIcon = Instance.new("TextButton")
 miniIcon.Size = UDim2.new(0, 45, 0, 45)
-miniIcon.Position = UDim2.new(0, 100, 0, 100)
+miniIcon.Position = UDim2.new(0.5, -22, 0, 20)
 miniIcon.Text = "⚡"
 miniIcon.TextSize = 22
 miniIcon.Visible = false
@@ -80,398 +90,419 @@ applyHover(miniIcon, Colors.Title, Colors.BtnHover)
 
 -- TITLE
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 35)
+title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Colors.Title
-title.Text = "⚡ Ambrose ⚡"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 14
-title.TextColor3 = Colors.TextPrimary
+title.Text = " ⚡ Ambrose HUB ⚡ "
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 15
+title.TextColor3 = Colors.BtnOn
 title.Active = true
 title.Parent = frame
-addCorner(title, 10)
+addCorner(title, 12)
 
 local titleFix = Instance.new("Frame")
-titleFix.Size = UDim2.new(1, 0, 0, 10)
-titleFix.Position = UDim2.new(0, 0, 1, -10)
+titleFix.Size = UDim2.new(1, 0, 0, 12)
+titleFix.Position = UDim2.new(0, 0, 1, -12)
 titleFix.BackgroundColor3 = Colors.Title
 titleFix.BorderSizePixel = 0
 titleFix.Parent = title
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -35, 0, 0)
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -40, 0, 0)
 closeBtn.Text = "X"
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 13
-closeBtn.BackgroundColor3 = Colors.RedBtn
-closeBtn.TextColor3 = Colors.Title
+closeBtn.TextSize = 14
+closeBtn.BackgroundTransparency = 1
+closeBtn.TextColor3 = Colors.RedBtn
 closeBtn.Parent = frame
-addCorner(closeBtn, 8)
-applyHover(closeBtn, Colors.RedBtn, Colors.RedBtnHover)
+addCorner(closeBtn, 10)
+
+closeBtn.MouseEnter:Connect(function() TS:Create(closeBtn, TweenInfo.new(0.2), {TextColor3 = Colors.TextPrimary, BackgroundTransparency = 0, BackgroundColor3 = Colors.RedBtn}):Play() end)
+closeBtn.MouseLeave:Connect(function() TS:Create(closeBtn, TweenInfo.new(0.2), {TextColor3 = Colors.RedBtn, BackgroundTransparency = 1}):Play() end)
 
 local miniBtn = Instance.new("TextButton")
-miniBtn.Size = UDim2.new(0, 35, 0, 35)
-miniBtn.Position = UDim2.new(1, -70, 0, 0)
-miniBtn.Text = "-"
+miniBtn.Size = UDim2.new(0, 40, 0, 40)
+miniBtn.Position = UDim2.new(1, -80, 0, 0)
+miniBtn.Text = "—"
 miniBtn.Font = Enum.Font.GothamBold
-miniBtn.TextSize = 18
-miniBtn.BackgroundColor3 = Colors.Title
+miniBtn.TextSize = 14
+miniBtn.BackgroundTransparency = 1
 miniBtn.TextColor3 = Colors.TextPrimary
 miniBtn.Parent = frame
-addCorner(miniBtn, 8)
-applyHover(miniBtn, Colors.Title, Colors.BtnHover)
+addCorner(miniBtn, 10)
 
--- ================= HỆ THỐNG TABS ================= --
+miniBtn.MouseEnter:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0, BackgroundColor3 = Colors.BtnHover}):Play() end)
+miniBtn.MouseLeave:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end)
+
+-- Biến chứa danh sách dropdown để check tắt
+local playerListFrame = Instance.new("ScrollingFrame")
+
+-- ================= HỆ THỐNG TABS VỚI HIỆU ỨNG ================= --
 local tabContainer = Instance.new("Frame")
-tabContainer.Size = UDim2.new(1, -20, 0, 30)
-tabContainer.Position = UDim2.new(0, 10, 0, 45)
+tabContainer.Size = UDim2.new(1, -30, 0, 36)
+tabContainer.Position = UDim2.new(0, 15, 0, 50)
 tabContainer.BackgroundTransparency = 1
 tabContainer.Parent = frame
 
 local tabMainBtn = Instance.new("TextButton")
-tabMainBtn.Size = UDim2.new(0.48, 0, 1, 0)
+tabMainBtn.Size = UDim2.new(0.32, 0, 1, 0)
 tabMainBtn.Position = UDim2.new(0, 0, 0, 0)
 tabMainBtn.Text = "Main"
 tabMainBtn.Font = Enum.Font.GothamBold
-tabMainBtn.TextSize = 12
+tabMainBtn.TextSize = 13
 tabMainBtn.BackgroundColor3 = Colors.BtnHover
-tabMainBtn.TextColor3 = Colors.TextPrimary
+tabMainBtn.TextColor3 = Colors.BtnOn
 tabMainBtn.Parent = tabContainer
 addCorner(tabMainBtn, 6)
 
+local tabServerBtn = Instance.new("TextButton")
+tabServerBtn.Size = UDim2.new(0.32, 0, 1, 0)
+tabServerBtn.Position = UDim2.new(0.34, 0, 0, 0)
+tabServerBtn.Text = "Server"
+tabServerBtn.Font = Enum.Font.GothamBold
+tabServerBtn.TextSize = 13
+tabServerBtn.BackgroundColor3 = Colors.BtnOff
+tabServerBtn.TextColor3 = Colors.TextSecondary
+tabServerBtn.Parent = tabContainer
+addCorner(tabServerBtn, 6)
+
 local tabProfileBtn = Instance.new("TextButton")
-tabProfileBtn.Size = UDim2.new(0.48, 0, 1, 0)
-tabProfileBtn.Position = UDim2.new(0.52, 0, 0, 0)
+tabProfileBtn.Size = UDim2.new(0.32, 0, 1, 0)
+tabProfileBtn.Position = UDim2.new(0.68, 0, 0, 0)
 tabProfileBtn.Text = "Profile"
 tabProfileBtn.Font = Enum.Font.GothamBold
-tabProfileBtn.TextSize = 12
+tabProfileBtn.TextSize = 13
 tabProfileBtn.BackgroundColor3 = Colors.BtnOff
 tabProfileBtn.TextColor3 = Colors.TextSecondary
 tabProfileBtn.Parent = tabContainer
 addCorner(tabProfileBtn, 6)
 
--- Các khung trang (Pages)
+-- Vùng chứa mượt mà cho các Pages
+local pagesContainer = Instance.new("Frame")
+pagesContainer.Size = UDim2.new(1, 0, 1, -100)
+pagesContainer.Position = UDim2.new(0, 0, 0, 100)
+pagesContainer.BackgroundTransparency = 1
+pagesContainer.ClipsDescendants = true
+pagesContainer.Parent = frame
+
 local pageMain = Instance.new("Frame")
-pageMain.Size = UDim2.new(1, 0, 1, -85)
-pageMain.Position = UDim2.new(0, 0, 0, 85)
+pageMain.Size = UDim2.new(1, 0, 1, 0)
+pageMain.Position = UDim2.new(0, 0, 0, 0)
 pageMain.BackgroundTransparency = 1
-pageMain.Visible = true
-pageMain.Parent = frame
+pageMain.Parent = pagesContainer
+
+local pageServer = Instance.new("Frame")
+pageServer.Size = UDim2.new(1, 0, 1, 0)
+pageServer.Position = UDim2.new(1, 0, 0, 0) 
+pageServer.BackgroundTransparency = 1
+pageServer.Parent = pagesContainer
 
 local pageProfile = Instance.new("Frame")
-pageProfile.Size = UDim2.new(1, 0, 1, -85)
-pageProfile.Position = UDim2.new(0, 0, 0, 85)
+pageProfile.Size = UDim2.new(1, 0, 1, 0)
+pageProfile.Position = UDim2.new(1, 0, 0, 0)
 pageProfile.BackgroundTransparency = 1
-pageProfile.Visible = false
-pageProfile.Parent = frame
+pageProfile.Parent = pagesContainer
 
--- Logic chuyển Tab
-tabMainBtn.MouseButton1Click:Connect(function()
-    pageMain.Visible = true
-    pageProfile.Visible = false
-    TS:Create(tabMainBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.BtnHover, TextColor3 = Colors.TextPrimary}):Play()
-    TS:Create(tabProfileBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.BtnOff, TextColor3 = Colors.TextSecondary}):Play()
-end)
+local pagesList = {pageMain, pageServer, pageProfile}
+local tabBtns = {tabMainBtn, tabServerBtn, tabProfileBtn}
 
-tabProfileBtn.MouseButton1Click:Connect(function()
-    pageMain.Visible = false
-    pageProfile.Visible = true
-    TS:Create(tabProfileBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.BtnHover, TextColor3 = Colors.TextPrimary}):Play()
-    TS:Create(tabMainBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.BtnOff, TextColor3 = Colors.TextSecondary}):Play()
-end)
+-- Logic vuốt mượt mà (Sliding Animation)
+local function switchTab(index)
+    -- Tắt dropdown nếu nó đang hiển thị
+    if playerListFrame and playerListFrame.Visible then
+        playerListFrame.Visible = false
+    end
+
+    for i, p in ipairs(pagesList) do
+        local targetPos
+        if i < index then
+            targetPos = UDim2.new(-1, 0, 0, 0) -- Trượt sang trái
+        elseif i > index then
+            targetPos = UDim2.new(1, 0, 0, 0)  -- Trượt sang phải
+        else
+            targetPos = UDim2.new(0, 0, 0, 0)  -- Nằm ở giữa
+        end
+        TS:Create(p, TweenInfo.new(0.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = targetPos}):Play()
+    end
+
+    for i, btn in ipairs(tabBtns) do
+        local isAct = (i == index)
+        local bgCol = isAct and Colors.BtnHover or Colors.BtnOff
+        local txtCol = isAct and Colors.BtnOn or Colors.TextSecondary
+        TS:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = bgCol, TextColor3 = txtCol}):Play()
+    end
+end
+
+tabMainBtn.MouseButton1Click:Connect(function() switchTab(1) end)
+tabServerBtn.MouseButton1Click:Connect(function() switchTab(2) end)
+tabProfileBtn.MouseButton1Click:Connect(function() switchTab(3) end)
+
 
 -- ================= LOGIC BIẾN ================= --
 local enabled, weightEnabled, flyEnabled, noclipEnabled = false, false, false, false
 local speedValue, weightValue, flySpeed = 16, 0, 50
 
--- ================= UI: PAGE MAIN (Chức năng cũ) ================= --
--- SPEED
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0.65, 0, 0, 30)
-toggleBtn.Position = UDim2.new(0.075, 0, 0, 10)
-toggleBtn.Text = "Speed: OFF"
-toggleBtn.Font = Enum.Font.GothamSemibold; toggleBtn.TextSize = 13
-toggleBtn.BackgroundColor3 = Colors.BtnOff; toggleBtn.TextColor3 = Colors.TextPrimary
-toggleBtn.Parent = pageMain
-addCorner(toggleBtn, 6)
-applyHover(toggleBtn, Colors.BtnOff, Colors.BtnHover, true, function() return enabled end)
+-- ================= UI: PAGE MAIN ================= --
+local mainLayout = Instance.new("UIListLayout")
+mainLayout.Parent = pageMain
+mainLayout.SortOrder = Enum.SortOrder.LayoutOrder
+mainLayout.Padding = UDim.new(0, 12)
+mainLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-local speedKeyBtn = Instance.new("TextButton")
-speedKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
-speedKeyBtn.Position = UDim2.new(0.745, 0, 0, 10)
-speedKeyBtn.Text = "None"
-speedKeyBtn.Font = Enum.Font.Gotham; speedKeyBtn.TextSize = 11
-speedKeyBtn.BackgroundColor3 = Colors.Keybind; speedKeyBtn.TextColor3 = Colors.TextSecondary
-speedKeyBtn.Parent = pageMain
-addCorner(speedKeyBtn, 6)
-applyHover(speedKeyBtn, Colors.Keybind, Colors.KeybindHover)
+local function createModule(name, order, getStat, textValue)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.9, 0, 0, 45)
+    frame.BackgroundTransparency = 1
+    frame.LayoutOrder = order
+    
+    local toggle = Instance.new("TextButton")
+    toggle.Size = UDim2.new(0.7, 0, 0, 36)
+    toggle.Position = UDim2.new(0, 0, 0, 0)
+    toggle.Text = name .. ": OFF"
+    toggle.Font = Enum.Font.GothamBold
+    toggle.TextSize = 13
+    toggle.BackgroundColor3 = Colors.BtnOff
+    toggle.TextColor3 = Colors.TextPrimary
+    toggle.Parent = frame
+    addCorner(toggle, 6)
+    applyHover(toggle, Colors.BtnOff, Colors.BtnHover, true, getStat)
 
-local sliderBar = Instance.new("Frame")
-sliderBar.Size = UDim2.new(0.65, 0, 0, 6) 
-sliderBar.Position = UDim2.new(0.075, 0, 0, 50)
-sliderBar.BackgroundColor3 = Colors.SliderBg
-sliderBar.Parent = pageMain
-addCorner(sliderBar, 100)
+    local keybtn = Instance.new("TextButton")
+    keybtn.Size = UDim2.new(0.25, 0, 0, 36)
+    keybtn.Position = UDim2.new(0.75, 0, 0, 0)
+    keybtn.Text = "None"
+    keybtn.Font = Enum.Font.Gotham
+    keybtn.TextSize = 12
+    keybtn.BackgroundColor3 = Colors.Keybind
+    keybtn.TextColor3 = Colors.TextSecondary
+    keybtn.Parent = frame
+    addCorner(keybtn, 6)
+    applyHover(keybtn, Colors.Keybind, Colors.KeybindHover)
 
-local slider = Instance.new("Frame")
-slider.Size = UDim2.new(0, 14, 0, 14)
-slider.Position = UDim2.new(0, -7, 0.5, -7)
-slider.BackgroundColor3 = Colors.SliderHandle
-slider.Parent = sliderBar
-addCorner(slider, 100)
+    return frame, toggle, keybtn
+end
 
-local speedText = Instance.new("TextLabel")
-speedText.Size = UDim2.new(0.65, 0, 0, 20)
-speedText.Position = UDim2.new(0.075, 0, 0, 60)
-speedText.BackgroundTransparency = 1
-speedText.Font = Enum.Font.Gotham; speedText.TextSize = 12
-speedText.TextColor3 = Colors.TextSecondary
-speedText.Text = "Speed: 16"
-speedText.Parent = pageMain
+local function createSlider(name, order, defaultVal, maxVal)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.9, 0, 0, 25)
+    frame.BackgroundTransparency = 1
+    frame.LayoutOrder = order
+    
+    local bar = Instance.new("Frame")
+    bar.Size = UDim2.new(0.7, 0, 0, 6) 
+    bar.Position = UDim2.new(0, 0, 0.5, -3)
+    bar.BackgroundColor3 = Colors.SliderBg
+    bar.Parent = frame
+    addCorner(bar, 100)
 
--- WEIGHT
-local weightToggle = Instance.new("TextButton")
-weightToggle.Size = UDim2.new(0.65, 0, 0, 30)
-weightToggle.Position = UDim2.new(0.075, 0, 0, 90)
-weightToggle.Text = "Weight: OFF"
-weightToggle.Font = Enum.Font.GothamSemibold; weightToggle.TextSize = 13
-weightToggle.BackgroundColor3 = Colors.BtnOff; weightToggle.TextColor3 = Colors.TextPrimary
-weightToggle.Parent = pageMain
-addCorner(weightToggle, 6)
-applyHover(weightToggle, Colors.BtnOff, Colors.BtnHover, true, function() return weightEnabled end)
+    local handle = Instance.new("Frame")
+    handle.Size = UDim2.new(0, 16, 0, 16)
+    handle.Position = UDim2.new(defaultVal/maxVal, -8, 0.5, -8)
+    handle.BackgroundColor3 = Colors.SliderHandle
+    handle.Parent = bar
+    addCorner(handle, 100)
 
-local weightKeyBtn = Instance.new("TextButton")
-weightKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
-weightKeyBtn.Position = UDim2.new(0.745, 0, 0, 90)
-weightKeyBtn.Text = "None"
-weightKeyBtn.Font = Enum.Font.Gotham; weightKeyBtn.TextSize = 11
-weightKeyBtn.BackgroundColor3 = Colors.Keybind; weightKeyBtn.TextColor3 = Colors.TextSecondary
-weightKeyBtn.Parent = pageMain
-addCorner(weightKeyBtn, 6)
-applyHover(weightKeyBtn, Colors.Keybind, Colors.KeybindHover)
+    local txt = Instance.new("TextLabel")
+    txt.Size = UDim2.new(0.25, 0, 1, 0)
+    txt.Position = UDim2.new(0.75, 0, 0, 0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.GothamSemibold
+    txt.TextSize = 12
+    txt.TextColor3 = Colors.TextSecondary
+    txt.Text = defaultVal
+    txt.Parent = frame
 
-local weightBar = Instance.new("Frame")
-weightBar.Size = UDim2.new(0.65, 0, 0, 6)
-weightBar.Position = UDim2.new(0.075, 0, 0, 130)
-weightBar.BackgroundColor3 = Colors.SliderBg
-weightBar.Parent = pageMain
-addCorner(weightBar, 100)
+    return frame, bar, handle, txt
+end
 
-local weightSlider = Instance.new("Frame")
-weightSlider.Size = UDim2.new(0, 14, 0, 14)
-weightSlider.Position = UDim2.new(0, -7, 0.5, -7)
-weightSlider.BackgroundColor3 = Colors.SliderHandle
-weightSlider.Parent = weightBar
-addCorner(weightSlider, 100)
+-- Speed
+local speedMod, speedToggle, speedKey = createModule("Speed", 1, function() return enabled end)
+speedMod.Parent = pageMain
+local speedSliderMod, speedBar, speedHandle, speedTxt = createSlider("Speed", 2, 16, 1000)
+speedSliderMod.Parent = pageMain
 
-local weightText = Instance.new("TextLabel")
-weightText.Size = UDim2.new(0.65, 0, 0, 20)
-weightText.Position = UDim2.new(0.075, 0, 0, 140)
-weightText.BackgroundTransparency = 1
-weightText.Font = Enum.Font.Gotham; weightText.TextSize = 12
-weightText.TextColor3 = Colors.TextSecondary
-weightText.Text = "Weight: 0"
-weightText.Parent = pageMain
+-- Weight
+local weightMod, weightToggle, weightKey = createModule("Weight", 3, function() return weightEnabled end)
+weightMod.Parent = pageMain
+local weightSliderMod, weightBar, weightHandle, weightTxt = createSlider("Weight", 4, 0, 1000)
+weightSliderMod.Parent = pageMain
 
--- FLY
-local flyToggle = Instance.new("TextButton")
-flyToggle.Size = UDim2.new(0.65, 0, 0, 30)
-flyToggle.Position = UDim2.new(0.075, 0, 0, 170)
-flyToggle.Text = "Fly: OFF"
-flyToggle.Font = Enum.Font.GothamSemibold; flyToggle.TextSize = 13
-flyToggle.BackgroundColor3 = Colors.BtnOff; flyToggle.TextColor3 = Colors.TextPrimary
-flyToggle.Parent = pageMain
-addCorner(flyToggle, 6)
-applyHover(flyToggle, Colors.BtnOff, Colors.BtnHover, true, function() return flyEnabled end)
+-- Fly
+local flyMod, flyToggle, flyKey = createModule("Fly", 5, function() return flyEnabled end)
+flyMod.Parent = pageMain
+local flySliderMod, flyBar, flyHandle, flyTxt = createSlider("Fly", 6, 50, 1000)
+flySliderMod.Parent = pageMain
 
-local flyKeyBtn = Instance.new("TextButton")
-flyKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
-flyKeyBtn.Position = UDim2.new(0.745, 0, 0, 170)
-flyKeyBtn.Text = "None"
-flyKeyBtn.Font = Enum.Font.Gotham; flyKeyBtn.TextSize = 11
-flyKeyBtn.BackgroundColor3 = Colors.Keybind; flyKeyBtn.TextColor3 = Colors.TextSecondary
-flyKeyBtn.Parent = pageMain
-addCorner(flyKeyBtn, 6)
-applyHover(flyKeyBtn, Colors.Keybind, Colors.KeybindHover)
+-- Noclip
+local noclipMod, noclipToggle, noclipKey = createModule("Noclip", 7, function() return noclipEnabled end)
+noclipMod.Parent = pageMain
 
-local flyBar = Instance.new("Frame")
-flyBar.Size = UDim2.new(0.65, 0, 0, 6)
-flyBar.Position = UDim2.new(0.075, 0, 0, 210)
-flyBar.BackgroundColor3 = Colors.SliderBg
-flyBar.Parent = pageMain
-addCorner(flyBar, 100)
+-- Khoảng trống
+local spacer = Instance.new("Frame")
+spacer.Size = UDim2.new(1, 0, 0, 5)
+spacer.BackgroundTransparency = 1
+spacer.LayoutOrder = 8
+spacer.Parent = pageMain
 
-local flySlider = Instance.new("Frame")
-flySlider.Size = UDim2.new(0, 14, 0, 14)
-flySlider.Position = UDim2.new(0, -7, 0.5, -7)
-flySlider.BackgroundColor3 = Colors.SliderHandle
-flySlider.Parent = flyBar
-addCorner(flySlider, 100)
+-- Teleport Tool
+local tpFrame = Instance.new("Frame")
+tpFrame.Size = UDim2.new(0.9, 0, 0, 36)
+tpFrame.BackgroundTransparency = 1
+tpFrame.LayoutOrder = 9
+tpFrame.Parent = pageMain
 
-local flyText = Instance.new("TextLabel")
-flyText.Size = UDim2.new(0.65, 0, 0, 20)
-flyText.Position = UDim2.new(0.075, 0, 0, 220)
-flyText.BackgroundTransparency = 1
-flyText.Font = Enum.Font.Gotham; flyText.TextSize = 12
-flyText.TextColor3 = Colors.TextSecondary
-flyText.Text = "Fly Speed: 50"
-flyText.Parent = pageMain
-
--- NOCLIP
-local noclipToggle = Instance.new("TextButton")
-noclipToggle.Size = UDim2.new(0.65, 0, 0, 30)
-noclipToggle.Position = UDim2.new(0.075, 0, 0, 250) 
-noclipToggle.Text = "Noclip: OFF"
-noclipToggle.Font = Enum.Font.GothamSemibold; noclipToggle.TextSize = 13
-noclipToggle.BackgroundColor3 = Colors.BtnOff; noclipToggle.TextColor3 = Colors.TextPrimary
-noclipToggle.Parent = pageMain
-addCorner(noclipToggle, 6)
-applyHover(noclipToggle, Colors.BtnOff, Colors.BtnHover, true, function() return noclipEnabled end)
-
-local noclipKeyBtn = Instance.new("TextButton")
-noclipKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
-noclipKeyBtn.Position = UDim2.new(0.745, 0, 0, 250)
-noclipKeyBtn.Text = "None"
-noclipKeyBtn.Font = Enum.Font.Gotham; noclipKeyBtn.TextSize = 11
-noclipKeyBtn.BackgroundColor3 = Colors.Keybind; noclipKeyBtn.TextColor3 = Colors.TextSecondary
-noclipKeyBtn.Parent = pageMain
-addCorner(noclipKeyBtn, 6)
-applyHover(noclipKeyBtn, Colors.Keybind, Colors.KeybindHover)
-
--- DROPDOWN TELEPORT
 local tpDropdownBtn = Instance.new("TextButton")
-tpDropdownBtn.Size = UDim2.new(0.85, 0, 0, 30)
-tpDropdownBtn.Position = UDim2.new(0.075, 0, 0, 295)
+tpDropdownBtn.Size = UDim2.new(0.55, 0, 1, 0)
 tpDropdownBtn.Text = "Chọn người chơi..."
-tpDropdownBtn.Font = Enum.Font.Gotham; tpDropdownBtn.TextSize = 12
-tpDropdownBtn.BackgroundColor3 = Colors.Keybind; tpDropdownBtn.TextColor3 = Colors.TextPrimary
-tpDropdownBtn.Parent = pageMain
+tpDropdownBtn.Font = Enum.Font.Gotham
+tpDropdownBtn.TextSize = 12
+tpDropdownBtn.BackgroundColor3 = Colors.Keybind
+tpDropdownBtn.TextColor3 = Colors.TextPrimary
+tpDropdownBtn.Parent = tpFrame
 addCorner(tpDropdownBtn, 6)
 applyHover(tpDropdownBtn, Colors.Keybind, Colors.KeybindHover)
 
--- NÚT REFRESH & TELEPORT
 local refreshBtn = Instance.new("TextButton")
-refreshBtn.Size = UDim2.new(0.4, 0, 0, 30)
-refreshBtn.Position = UDim2.new(0.075, 0, 0, 335)
-refreshBtn.Text = "Refresh"
-refreshBtn.Font = Enum.Font.GothamSemibold; refreshBtn.TextSize = 12
-refreshBtn.BackgroundColor3 = Colors.BlueBtn; refreshBtn.TextColor3 = Colors.Title
-refreshBtn.Parent = pageMain
+refreshBtn.Size = UDim2.new(0.2, 0, 1, 0)
+refreshBtn.Position = UDim2.new(0.575, 0, 0, 0)
+refreshBtn.Text = "Làm mới"
+refreshBtn.Font = Enum.Font.GothamBold
+refreshBtn.TextSize = 11
+refreshBtn.BackgroundColor3 = Colors.BlueBtn
+refreshBtn.TextColor3 = Colors.Title
+refreshBtn.Parent = tpFrame
 addCorner(refreshBtn, 6)
 applyHover(refreshBtn, Colors.BlueBtn, Colors.BlueBtnHover)
 
 local tpBtn = Instance.new("TextButton")
-tpBtn.Size = UDim2.new(0.4, 0, 0, 30)
-tpBtn.Position = UDim2.new(0.525, 0, 0, 335)
+tpBtn.Size = UDim2.new(0.2, 0, 1, 0)
+tpBtn.Position = UDim2.new(0.8, 0, 0, 0)
 tpBtn.Text = "Teleport"
-tpBtn.Font = Enum.Font.GothamSemibold; tpBtn.TextSize = 12
-tpBtn.BackgroundColor3 = Colors.OrangeBtn; tpBtn.TextColor3 = Colors.Title
-tpBtn.Parent = pageMain
+tpBtn.Font = Enum.Font.GothamBold
+tpBtn.TextSize = 11
+tpBtn.BackgroundColor3 = Colors.OrangeBtn
+tpBtn.TextColor3 = Colors.Title
+tpBtn.Parent = tpFrame
 addCorner(tpBtn, 6)
 applyHover(tpBtn, Colors.OrangeBtn, Colors.OrangeBtnHover)
 
--- DANH SÁCH CUỘN (ZIndex cao để đè lên các nút)
-local playerListFrame = Instance.new("ScrollingFrame")
-playerListFrame.Size = UDim2.new(0.85, 0, 0, 100)
-playerListFrame.Position = UDim2.new(0.075, 0, 0, 328)
+-- Danh sách Dropdown Teleport (Khai báo lúc đầu, giờ set properties)
+playerListFrame.Size = UDim2.new(0.55, 0, 0, 120)
+playerListFrame.Position = UDim2.new(0.05, 0, 0, 380)
 playerListFrame.BackgroundColor3 = Colors.Title
 playerListFrame.BorderSizePixel = 0
 playerListFrame.Visible = false
 playerListFrame.ZIndex = 10
-playerListFrame.ScrollBarThickness = 3
+playerListFrame.ScrollBarThickness = 4
 playerListFrame.ScrollBarImageColor3 = Colors.SliderHandle
-playerListFrame.Parent = pageMain
+playerListFrame.Parent = frame 
 addCorner(playerListFrame, 6)
 
 local listLayout = Instance.new("UIListLayout")
 listLayout.Parent = playerListFrame
 listLayout.SortOrder = Enum.SortOrder.Name
 
--- ================= UI: PAGE PROFILE (Tính năng mới) ================= --
--- Avatar
+
+-- ================= UI: PAGE SERVER ================= --
+local serverLayout = Instance.new("UIListLayout")
+serverLayout.Parent = pageServer
+serverLayout.SortOrder = Enum.SortOrder.LayoutOrder
+serverLayout.Padding = UDim.new(0, 15)
+serverLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local function createServerBtn(text, color, hoverColor)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.85, 0, 0, 45)
+    btn.Text = text
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.BackgroundColor3 = color
+    btn.TextColor3 = color == Colors.BtnOff and Colors.TextPrimary or Colors.Title
+    addCorner(btn, 8)
+    applyHover(btn, color, hoverColor)
+    return btn
+end
+
+local rejoinBtn = createServerBtn("Rejoin Server", Colors.BtnOff, Colors.BtnHover)
+rejoinBtn.Parent = pageServer
+
+local randomServerBtn = createServerBtn("Join Random Server", Colors.BlueBtn, Colors.BlueBtnHover)
+randomServerBtn.Parent = pageServer
+
+local smallServerBtn = createServerBtn("Join Smallest Server", Colors.OrangeBtn, Colors.OrangeBtnHover)
+smallServerBtn.Parent = pageServer
+
+local copyJobBtn = createServerBtn("Copy Server JobId", Colors.Keybind, Colors.KeybindHover)
+copyJobBtn.TextColor3 = Colors.BtnOn
+copyJobBtn.Parent = pageServer
+
+
+-- ================= UI: PAGE PROFILE ================= --
 local avatarImage = Instance.new("ImageLabel")
-avatarImage.Size = UDim2.new(0, 100, 0, 100)
-avatarImage.Position = UDim2.new(0.5, -50, 0, 10)
+avatarImage.Size = UDim2.new(0, 110, 0, 110)
+avatarImage.Position = UDim2.new(0.5, -55, 0, 15)
 avatarImage.BackgroundColor3 = Colors.Keybind
 avatarImage.BorderSizePixel = 0
 avatarImage.Image = "rbxthumb://type=AvatarBust&id=" .. player.UserId .. "&w=150&h=150"
 avatarImage.Parent = pageProfile
-addCorner(avatarImage, 50) -- Hình tròn
+addCorner(avatarImage, 100) 
 
--- Thông tin Display Name
 local profileName = Instance.new("TextLabel")
-profileName.Size = UDim2.new(0.9, 0, 0, 25)
-profileName.Position = UDim2.new(0.05, 0, 0, 120)
+profileName.Size = UDim2.new(0.9, 0, 0, 30)
+profileName.Position = UDim2.new(0.05, 0, 0, 135)
 profileName.BackgroundTransparency = 1
-profileName.Font = Enum.Font.GothamBold
-profileName.TextSize = 18
-profileName.TextColor3 = Colors.TextPrimary
+profileName.Font = Enum.Font.GothamBlack
+profileName.TextSize = 22
+profileName.TextColor3 = Colors.BtnOn
 profileName.Text = player.DisplayName
 profileName.Parent = pageProfile
 
--- Username (@name)
 local profileUser = Instance.new("TextLabel")
 profileUser.Size = UDim2.new(0.9, 0, 0, 20)
-profileUser.Position = UDim2.new(0.05, 0, 0, 145)
+profileUser.Position = UDim2.new(0.05, 0, 0, 165)
 profileUser.BackgroundTransparency = 1
 profileUser.Font = Enum.Font.Gotham
-profileUser.TextSize = 12
+profileUser.TextSize = 14
 profileUser.TextColor3 = Colors.TextSecondary
 profileUser.Text = "@" .. player.Name
 profileUser.Parent = pageProfile
 
--- Khung chứa thông số phụ
 local statsFrame = Instance.new("Frame")
-statsFrame.Size = UDim2.new(0.85, 0, 0, 80)
-statsFrame.Position = UDim2.new(0.075, 0, 0, 185)
+statsFrame.Size = UDim2.new(0.85, 0, 0, 90)
+statsFrame.Position = UDim2.new(0.075, 0, 0, 210)
 statsFrame.BackgroundColor3 = Colors.Keybind
 statsFrame.BorderSizePixel = 0
 statsFrame.Parent = pageProfile
-addCorner(statsFrame, 8)
+addCorner(statsFrame, 10)
 
-local idTitle = Instance.new("TextLabel")
-idTitle.Size = UDim2.new(1, -20, 0.5, 0)
-idTitle.Position = UDim2.new(0, 10, 0, 0)
-idTitle.BackgroundTransparency = 1
-idTitle.Font = Enum.Font.GothamSemibold
-idTitle.TextSize = 12
-idTitle.TextColor3 = Colors.TextPrimary
-idTitle.TextXAlignment = Enum.TextXAlignment.Left
-idTitle.Text = "User ID:"
-idTitle.Parent = statsFrame
+local function addStatText(yScale, title, val)
+    local tLabel = Instance.new("TextLabel")
+    tLabel.Size = UDim2.new(1, -30, 0.5, 0)
+    tLabel.Position = UDim2.new(0, 15, yScale, 0)
+    tLabel.BackgroundTransparency = 1
+    tLabel.Font = Enum.Font.GothamBold
+    tLabel.TextSize = 13
+    tLabel.TextColor3 = Colors.TextPrimary
+    tLabel.TextXAlignment = Enum.TextXAlignment.Left
+    tLabel.Text = title
+    tLabel.Parent = statsFrame
 
-local idValue = Instance.new("TextLabel")
-idValue.Size = UDim2.new(1, -20, 0.5, 0)
-idValue.Position = UDim2.new(0, 10, 0, 0)
-idValue.BackgroundTransparency = 1
-idValue.Font = Enum.Font.Gotham
-idValue.TextSize = 12
-idValue.TextColor3 = Colors.SliderHandle
-idValue.TextXAlignment = Enum.TextXAlignment.Right
-idValue.Text = tostring(player.UserId)
-idValue.Parent = statsFrame
+    local vLabel = Instance.new("TextLabel")
+    vLabel.Size = UDim2.new(1, -30, 0.5, 0)
+    vLabel.Position = UDim2.new(0, 15, yScale, 0)
+    vLabel.BackgroundTransparency = 1
+    vLabel.Font = Enum.Font.Gotham
+    vLabel.TextSize = 13
+    vLabel.TextColor3 = Colors.BlueBtn
+    vLabel.TextXAlignment = Enum.TextXAlignment.Right
+    vLabel.Text = val
+    vLabel.Parent = statsFrame
+end
 
-local ageTitle = Instance.new("TextLabel")
-ageTitle.Size = UDim2.new(1, -20, 0.5, 0)
-ageTitle.Position = UDim2.new(0, 10, 0.5, 0)
-ageTitle.BackgroundTransparency = 1
-ageTitle.Font = Enum.Font.GothamSemibold
-ageTitle.TextSize = 12
-ageTitle.TextColor3 = Colors.TextPrimary
-ageTitle.TextXAlignment = Enum.TextXAlignment.Left
-ageTitle.Text = "Account Age:"
-ageTitle.Parent = statsFrame
+addStatText(0, "User ID:", tostring(player.UserId))
+addStatText(0.5, "Account Age:", tostring(player.AccountAge) .. " Days")
 
-local ageValue = Instance.new("TextLabel")
-ageValue.Size = UDim2.new(1, -20, 0.5, 0)
-ageValue.Position = UDim2.new(0, 10, 0.5, 0)
-ageValue.BackgroundTransparency = 1
-ageValue.Font = Enum.Font.Gotham
-ageValue.TextSize = 12
-ageValue.TextColor3 = Colors.SliderHandle
-ageValue.TextXAlignment = Enum.TextXAlignment.Right
-ageValue.Text = tostring(player.AccountAge) .. " Days"
-ageValue.Parent = statsFrame
 
 -- ================= LOGIC ĐIỀU KHIỂN & CHỨC NĂNG ================= --
 local draggingSlider, draggingWeight, draggingFly = false, false, false
@@ -539,8 +570,8 @@ end
 
 local function toggleSpeedLogic()
     enabled = not enabled
-    toggleBtn.Text = enabled and "Speed: ON" or "Speed: OFF"
-    toggleColor(toggleBtn, enabled)
+    speedToggle.Text = enabled and "Speed: ON" or "Speed: OFF"
+    toggleColor(speedToggle, enabled)
 end
 
 local function toggleWeightLogic()
@@ -579,7 +610,7 @@ local function toggleNoclipLogic()
     end
 end
 
-toggleBtn.MouseButton1Click:Connect(toggleSpeedLogic)
+speedToggle.MouseButton1Click:Connect(toggleSpeedLogic)
 weightToggle.MouseButton1Click:Connect(toggleWeightLogic)
 flyToggle.MouseButton1Click:Connect(toggleFlyLogic)
 noclipToggle.MouseButton1Click:Connect(toggleNoclipLogic)
@@ -592,13 +623,38 @@ local function setupKeybindButton(btn, targetName)
     end)
 end
 
-setupKeybindButton(speedKeyBtn, "Speed")
-setupKeybindButton(weightKeyBtn, "Weight")
-setupKeybindButton(flyKeyBtn, "Fly")
-setupKeybindButton(noclipKeyBtn, "Noclip")
+setupKeybindButton(speedKey, "Speed")
+setupKeybindButton(weightKey, "Weight")
+setupKeybindButton(flyKey, "Fly")
+setupKeybindButton(noclipKey, "Noclip")
 
--- ================= SỰ KIỆN PHÍM ================= --
+-- ================= MINIMIZE / MAXIMIZE LOGIC ================= --
+local function toggleMenu()
+    if frame.Visible then
+        miniIcon.Position = frame.Position
+        TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        task.delay(0.3, function()
+            frame.Visible = false; frame.Size = UDim2.new(0, 420, 0, 530)
+            miniIcon.Visible = true; miniIcon.Size = UDim2.new(0, 0, 0, 0)
+            TS:Create(miniIcon, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 45, 0, 45)}):Play()
+        end)
+    else
+        frame.Position = miniIcon.Position
+        TS:Create(miniIcon, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        task.delay(0.2, function()
+            miniIcon.Visible = false; miniIcon.Size = UDim2.new(0, 45, 0, 45)
+            frame.Visible = true; frame.Size = UDim2.new(0, 0, 0, 0)
+            TS:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 420, 0, 530)}):Play()
+        end)
+    end
+end
+
+miniBtn.MouseButton1Click:Connect(toggleMenu)
+miniIcon.MouseButton1Click:Connect(toggleMenu)
+
+-- ================= SỰ KIỆN PHÍM & CLICK OUTSIDE ================= --
 UIS.InputBegan:Connect(function(input, gameProcessed)
+    -- Gán phím cho chức năng
     if bindingTarget then
         if input.UserInputType == Enum.UserInputType.Keyboard then
             if input.KeyCode == Enum.KeyCode.Escape then
@@ -613,6 +669,23 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         return
     end
 
+    -- XỬ LÝ TỰ ĐỘNG TẮT DROPDOWN KHI CLICK RA NGOÀI
+    if playerListFrame.Visible and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+        local pos = input.Position
+        local dropMin = playerListFrame.AbsolutePosition
+        local dropMax = dropMin + playerListFrame.AbsoluteSize
+        local btnMin = tpDropdownBtn.AbsolutePosition
+        local btnMax = btnMin + tpDropdownBtn.AbsoluteSize
+        
+        -- Kiểm tra chuột có nằm trong Dropdown hoặc nút chọn không
+        local inDrop = pos.X >= dropMin.X and pos.X <= dropMax.X and pos.Y >= dropMin.Y and pos.Y <= dropMax.Y
+        local inBtn = pos.X >= btnMin.X and pos.X <= btnMax.X and pos.Y >= btnMin.Y and pos.Y <= btnMax.Y
+        
+        if not inDrop and not inBtn then
+            playerListFrame.Visible = false
+        end
+    end
+
     if not gameProcessed then
         if input.UserInputType == Enum.UserInputType.Keyboard then
             if input.KeyCode == keybinds["Speed"] then toggleSpeedLogic() end
@@ -621,24 +694,9 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             if input.KeyCode == keybinds["Noclip"] then toggleNoclipLogic() end
         end
 
-        if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) then
-            if frame.Visible then
-                miniIcon.Position = frame.Position
-                TS:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-                task.delay(0.3, function()
-                    frame.Visible = false; frame.Size = UDim2.new(0, 240, 0, 480)
-                    miniIcon.Visible = true; miniIcon.Size = UDim2.new(0, 0, 0, 0)
-                    TS:Create(miniIcon, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 45, 0, 45)}):Play()
-                end)
-            else
-                frame.Position = miniIcon.Position
-                TS:Create(miniIcon, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-                task.delay(0.15, function()
-                    miniIcon.Visible = false; miniIcon.Size = UDim2.new(0, 45, 0, 45)
-                    frame.Visible = true; frame.Size = UDim2.new(0, 0, 0, 0)
-                    TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 240, 0, 480)}):Play()
-                end)
-            end
+        -- Phím F5 Thu Gọn
+        if (input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.F5) then
+            toggleMenu()
         end
 
         if input.KeyCode == Enum.KeyCode.Space then moveY = 1 end
@@ -756,8 +814,8 @@ end)
 
 refreshBtn.MouseButton1Click:Connect(function()
     updatePlayerList(); tpDropdownBtn.Text = "Chọn người chơi..."
-    refreshBtn.Text = "Updated!"
-    task.delay(1, function() if refreshBtn then refreshBtn.Text = "Refresh" end end)
+    refreshBtn.Text = "Xong!"
+    task.delay(1, function() if refreshBtn then refreshBtn.Text = "Làm mới" end end)
 end)
 
 tpBtn.MouseButton1Click:Connect(function()
@@ -768,35 +826,78 @@ tpBtn.MouseButton1Click:Connect(function()
         if targetCFrame and myRoot then
             myRoot.AssemblyLinearVelocity = Vector3.zero; myRoot.AssemblyAngularVelocity = Vector3.zero
             myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
-            tpBtn.Text = "Teleported!"
+            tpBtn.Text = "Thành công!"
             task.delay(1, function() if tpBtn then tpBtn.Text = "Teleport" end end)
         end
     else
-        tpBtn.Text = "Target Loading!"
+        tpBtn.Text = "Lỗi Target!"
         task.delay(1.5, function() if tpBtn then tpBtn.Text = "Teleport" end end)
     end
 end)
 
--- ================= MINIMIZE & CLOSE ================= --
-miniBtn.MouseButton1Click:Connect(function()
-    miniIcon.Position = frame.Position
-    TS:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-    task.delay(0.3, function()
-        frame.Visible = false; frame.Size = UDim2.new(0, 240, 0, 480)
-        miniIcon.Visible = true; miniIcon.Size = UDim2.new(0, 0, 0, 0)
-        TS:Create(miniIcon, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 45, 0, 45)}):Play()
-    end)
+-- ================= SERVER TAB LOGIC ================= --
+local function fetchServers()
+    local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+    local success, result = pcall(function() return HttpService:JSONDecode(game:HttpGet(url)) end)
+    if success and result and result.data then return result.data end
+    return {}
+end
+
+rejoinBtn.MouseButton1Click:Connect(function()
+    rejoinBtn.Text = "Rejoining..."
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
 end)
 
-miniIcon.MouseButton1Click:Connect(function()
-    frame.Position = miniIcon.Position
-    TS:Create(miniIcon, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-    task.delay(0.15, function()
-        miniIcon.Visible = false; miniIcon.Size = UDim2.new(0, 45, 0, 45)
-        frame.Visible = true; frame.Size = UDim2.new(0, 0, 0, 0)
-        TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 240, 0, 480)}):Play()
-    end)
+randomServerBtn.MouseButton1Click:Connect(function()
+    randomServerBtn.Text = "Finding Server..."
+    local servers = fetchServers()
+    local validServers = {}
+    
+    for _, v in pairs(servers) do
+        if v.playing < v.maxPlayers and v.id ~= game.JobId then table.insert(validServers, v.id) end
+    end
+    
+    if #validServers > 0 then
+        randomServerBtn.Text = "Teleporting..."
+        local randomId = validServers[math.random(1, #validServers)]
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, randomId, player)
+    else
+        randomServerBtn.Text = "No Server Found!"
+        task.delay(1.5, function() randomServerBtn.Text = "Join Random Server" end)
+    end
 end)
+
+smallServerBtn.MouseButton1Click:Connect(function()
+    smallServerBtn.Text = "Finding Smallest..."
+    local servers = fetchServers()
+    local smallestId = nil
+    local minPlayers = math.huge
+    
+    for _, v in pairs(servers) do
+        if v.playing < minPlayers and v.playing > 0 and v.id ~= game.JobId then
+            minPlayers = v.playing; smallestId = v.id
+        end
+    end
+    
+    if smallestId then
+        smallServerBtn.Text = "Teleporting..."
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, smallestId, player)
+    else
+        smallServerBtn.Text = "No Server Found!"
+        task.delay(1.5, function() smallServerBtn.Text = "Join Smallest Server" end)
+    end
+end)
+
+copyJobBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(game.JobId)
+        copyJobBtn.Text = "Copied to Clipboard!"
+    else
+        copyJobBtn.Text = "Executor Not Supported!"
+    end
+    task.delay(1.5, function() copyJobBtn.Text = "Copy Server JobId" end)
+end)
+
 
 closeBtn.MouseButton1Click:Connect(function()
     enabled = false; weightEnabled = false; flyEnabled = false; noclipEnabled = false
@@ -819,28 +920,28 @@ closeBtn.MouseButton1Click:Connect(function()
     if loopConnection then loopConnection:Disconnect() end
     if noclipConnection then noclipConnection:Disconnect() end
     
-    TS:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-    task.delay(0.3, function() gui:Destroy() end)
+    TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+    task.delay(0.35, function() gui:Destroy() end)
 end)
 
 -- ================= XỬ LÝ SLIDERS ================= --
-sliderBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingSlider = true end end)
+speedBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingSlider = true end end)
 weightBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingWeight = true end end)
 flyBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingFly = true end end)
 
 UIS.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         if draggingSlider then
-            local p = math.clamp((input.Position.X - sliderBar.AbsolutePosition.X)/sliderBar.AbsoluteSize.X, 0, 1)
-            slider.Position = UDim2.new(p, -7, 0.5, -7); speedValue = math.floor(p * 1000); speedText.Text = "Speed: " .. speedValue
+            local p = math.clamp((input.Position.X - speedBar.AbsolutePosition.X)/speedBar.AbsoluteSize.X, 0, 1)
+            speedHandle.Position = UDim2.new(p, -8, 0.5, -8); speedValue = math.floor(p * 1000); speedTxt.Text = speedValue
         end
         if draggingWeight then
             local p = math.clamp((input.Position.X - weightBar.AbsolutePosition.X)/weightBar.AbsoluteSize.X, 0, 1)
-            weightSlider.Position = UDim2.new(p, -7, 0.5, -7); weightValue = math.floor(p * 1000); weightText.Text = "Weight: " .. weightValue
+            weightHandle.Position = UDim2.new(p, -8, 0.5, -8); weightValue = math.floor(p * 1000); weightTxt.Text = weightValue
         end
         if draggingFly then
             local p = math.clamp((input.Position.X - flyBar.AbsolutePosition.X)/flyBar.AbsoluteSize.X, 0, 1)
-            flySlider.Position = UDim2.new(p, -7, 0.5, -7); flySpeed = math.floor(p * 1000); flyText.Text = "Fly Speed: " .. flySpeed
+            flyHandle.Position = UDim2.new(p, -8, 0.5, -8); flySpeed = math.floor(p * 1000); flyTxt.Text = flySpeed
         end
     end
 end)
