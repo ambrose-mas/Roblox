@@ -490,12 +490,40 @@ loopConnection = RunService.RenderStepped:Connect(function(dt)
 			local root = getTargetRoot()
 			if root then
 				local cam = workspace.CurrentCamera
-				local dir = Vector3.zero
-				if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
-				if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
-				if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
-				if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
-				dir += Vector3.new(0, moveY, 0)
+				local look = cam.CFrame.LookVector
+				local right = cam.CFrame.RightVector
+				
+				-- Tạo Vector tiến/lùi phẳng trên mặt đất (Loại bỏ thành phần trục Y)
+				local forwardFlat = Vector3.new(look.X, 0, look.Z)
+				if forwardFlat.Magnitude > 0 then
+					forwardFlat = forwardFlat.Unit
+				else
+					-- Dự phòng an toàn nếu nhìn thẳng 90 độ vuông góc lên trời/xuống đất
+					forwardFlat = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+					if forwardFlat.Magnitude > 0 then forwardFlat = forwardFlat.Unit else forwardFlat = Vector3.new(0, 0, -1) end
+				end
+				
+				-- Tạo Vector sang trái/phải phẳng
+				local rightFlat = Vector3.new(right.X, 0, right.Z)
+				if rightFlat.Magnitude > 0 then
+					rightFlat = rightFlat.Unit
+				else
+					rightFlat = forwardFlat:Cross(Vector3.new(0, 1, 0)).Unit
+				end
+				
+				-- Tính toán hướng di chuyển ngang từ WASD độc lập với Camera góc cao thấp
+				local horizontalDir = Vector3.zero
+				if UIS:IsKeyDown(Enum.KeyCode.W) then horizontalDir += forwardFlat end
+				if UIS:IsKeyDown(Enum.KeyCode.S) then horizontalDir -= forwardFlat end
+				if UIS:IsKeyDown(Enum.KeyCode.A) then horizontalDir -= rightFlat end
+				if UIS:IsKeyDown(Enum.KeyCode.D) then horizontalDir += rightFlat end
+				
+				if horizontalDir.Magnitude > 0 then
+					horizontalDir = horizontalDir.Unit
+				end
+				
+				-- Kết hợp hướng di chuyển ngang phẳng và trục dọc Y tuyệt đối (Space/Shift)
+				local dir = horizontalDir + Vector3.new(0, moveY, 0)
 				if dir.Magnitude > 0 then
 					dir = dir.Unit * flySpeed
 				end
