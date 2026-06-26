@@ -31,7 +31,7 @@ addCorner(frame, 8)
 local miniIcon = Instance.new("TextButton")
 miniIcon.Size = UDim2.new(0, 40, 0, 40)
 miniIcon.Position = UDim2.new(0, 100, 0, 100)
-miniIcon.Text = "🖕"
+miniIcon.Text = "⚡"
 miniIcon.TextSize = 20
 miniIcon.Visible = false
 miniIcon.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -87,7 +87,7 @@ addCorner(miniBtn, 8)
 -- ================= CÁC THÀNH PHẦN UI ================= --
 -- SPEED (Y: 45)
 local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0.85, 0, 0, 30)
+toggleBtn.Size = UDim2.new(0.65, 0, 0, 30) -- Thu nhỏ để chứa nút keybind
 toggleBtn.Position = UDim2.new(0.075, 0, 0, 45)
 toggleBtn.Text = "Speed: OFF"
 toggleBtn.Font = Enum.Font.GothamSemibold
@@ -96,6 +96,17 @@ toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 toggleBtn.TextColor3 = Color3.new(1, 1, 1)
 toggleBtn.Parent = frame
 addCorner(toggleBtn, 6)
+
+local speedKeyBtn = Instance.new("TextButton")
+speedKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
+speedKeyBtn.Position = UDim2.new(0.745, 0, 0, 45)
+speedKeyBtn.Text = "None"
+speedKeyBtn.Font = Enum.Font.Gotham
+speedKeyBtn.TextSize = 11
+speedKeyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+speedKeyBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+speedKeyBtn.Parent = frame
+addCorner(speedKeyBtn, 6)
 
 local sliderBar = Instance.new("Frame")
 sliderBar.Size = UDim2.new(0.85, 0, 0, 6)
@@ -123,7 +134,7 @@ speedText.Parent = frame
 
 -- WEIGHT (Y: 125)
 local weightToggle = Instance.new("TextButton")
-weightToggle.Size = UDim2.new(0.85, 0, 0, 30)
+weightToggle.Size = UDim2.new(0.65, 0, 0, 30)
 weightToggle.Position = UDim2.new(0.075, 0, 0, 125)
 weightToggle.Text = "Weight: OFF"
 weightToggle.Font = Enum.Font.GothamSemibold
@@ -132,6 +143,17 @@ weightToggle.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 weightToggle.TextColor3 = Color3.new(1, 1, 1)
 weightToggle.Parent = frame
 addCorner(weightToggle, 6)
+
+local weightKeyBtn = Instance.new("TextButton")
+weightKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
+weightKeyBtn.Position = UDim2.new(0.745, 0, 0, 125)
+weightKeyBtn.Text = "None"
+weightKeyBtn.Font = Enum.Font.Gotham
+weightKeyBtn.TextSize = 11
+weightKeyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+weightKeyBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+weightKeyBtn.Parent = frame
+addCorner(weightKeyBtn, 6)
 
 local weightBar = Instance.new("Frame")
 weightBar.Size = UDim2.new(0.85, 0, 0, 6)
@@ -159,7 +181,7 @@ weightText.Parent = frame
 
 -- FLY (Y: 205)
 local flyToggle = Instance.new("TextButton")
-flyToggle.Size = UDim2.new(0.85, 0, 0, 30)
+flyToggle.Size = UDim2.new(0.65, 0, 0, 30)
 flyToggle.Position = UDim2.new(0.075, 0, 0, 205)
 flyToggle.Text = "Fly: OFF"
 flyToggle.Font = Enum.Font.GothamSemibold
@@ -168,6 +190,17 @@ flyToggle.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 flyToggle.TextColor3 = Color3.new(1, 1, 1)
 flyToggle.Parent = frame
 addCorner(flyToggle, 6)
+
+local flyKeyBtn = Instance.new("TextButton")
+flyKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
+flyKeyBtn.Position = UDim2.new(0.745, 0, 0, 205)
+flyKeyBtn.Text = "None"
+flyKeyBtn.Font = Enum.Font.Gotham
+flyKeyBtn.TextSize = 11
+flyKeyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+flyKeyBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+flyKeyBtn.Parent = frame
+addCorner(flyKeyBtn, 6)
 
 local flyBar = Instance.new("Frame")
 flyBar.Size = UDim2.new(0.85, 0, 0, 6)
@@ -195,7 +228,7 @@ flyText.Parent = frame
 
 -- NOCLIP (Y: 285)
 local noclipToggle = Instance.new("TextButton")
-noclipToggle.Size = UDim2.new(0.85, 0, 0, 30)
+noclipToggle.Size = UDim2.new(0.65, 0, 0, 30)
 noclipToggle.Position = UDim2.new(0.075, 0, 0, 285) 
 noclipToggle.Text = "Noclip: OFF"
 noclipToggle.Font = Enum.Font.GothamSemibold
@@ -204,6 +237,17 @@ noclipToggle.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 noclipToggle.TextColor3 = Color3.new(1, 1, 1)
 noclipToggle.Parent = frame
 addCorner(noclipToggle, 6)
+
+local noclipKeyBtn = Instance.new("TextButton")
+noclipKeyBtn.Size = UDim2.new(0.18, 0, 0, 30)
+noclipKeyBtn.Position = UDim2.new(0.745, 0, 0, 285)
+noclipKeyBtn.Text = "None"
+noclipKeyBtn.Font = Enum.Font.Gotham
+noclipKeyBtn.TextSize = 11
+noclipKeyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+noclipKeyBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+noclipKeyBtn.Parent = frame
+addCorner(noclipKeyBtn, 6)
 
 -- DROPDOWN TELEPORT (Y: 335)
 local tpDropdownBtn = Instance.new("TextButton")
@@ -275,6 +319,16 @@ local moveY = 0
 
 local noclipEnabled = false
 
+-- QUẢN LÝ KEYBINDS
+local keybinds = {
+    Speed = nil,
+    Weight = nil,
+    Fly = nil,
+    Noclip = nil
+}
+local bindingTarget = nil
+local bindingBtn = nil
+
 local function getHumanoid()
     local char = player.Character
     if char then
@@ -340,6 +394,133 @@ local function stopFly()
     end
 end
 
+-- ================= CÁC HÀM TOGGLE (BẬT/TẮT) ================= --
+local function toggleColor(btn, state)
+    btn.BackgroundColor3 = state and Color3.fromRGB(50, 150, 80) or Color3.fromRGB(70, 70, 70)
+end
+
+local function toggleSpeedLogic()
+    enabled = not enabled
+    toggleBtn.Text = enabled and "Speed: ON" or "Speed: OFF"
+    toggleColor(toggleBtn, enabled)
+end
+
+local function toggleWeightLogic()
+    weightEnabled = not weightEnabled
+    weightToggle.Text = weightEnabled and "Weight: ON" or "Weight: OFF"
+    toggleColor(weightToggle, weightEnabled)
+end
+
+local function toggleFlyLogic()
+    flyEnabled = not flyEnabled
+    flyToggle.Text = flyEnabled and "Fly: ON" or "Fly: OFF"
+    toggleColor(flyToggle, flyEnabled)
+    if flyEnabled then startFly() else stopFly() end
+end
+
+local function toggleNoclipLogic()
+    noclipEnabled = not noclipEnabled
+    noclipToggle.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
+    toggleColor(noclipToggle, noclipEnabled)
+    
+    if not noclipEnabled then
+        local char = player.Character
+        if char then
+            local partsToReset = {"HumanoidRootPart", "Head", "Torso", "UpperTorso", "LowerTorso"}
+            for _, name in ipairs(partsToReset) do
+                local part = char:FindFirstChild(name)
+                if part and part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+            
+            local hum = char:FindFirstChild("Humanoid")
+            if hum and hum.SeatPart then
+                for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Gán Click cho các nút Toggle
+toggleBtn.MouseButton1Click:Connect(toggleSpeedLogic)
+weightToggle.MouseButton1Click:Connect(toggleWeightLogic)
+flyToggle.MouseButton1Click:Connect(toggleFlyLogic)
+noclipToggle.MouseButton1Click:Connect(toggleNoclipLogic)
+
+-- ================= LOGIC GÁN PHÍM TẮT (KEYBINDS) ================= --
+local function setupKeybindButton(btn, targetName)
+    btn.MouseButton1Click:Connect(function()
+        bindingTarget = targetName
+        bindingBtn = btn
+        btn.Text = "..."
+    end)
+end
+
+setupKeybindButton(speedKeyBtn, "Speed")
+setupKeybindButton(weightKeyBtn, "Weight")
+setupKeybindButton(flyKeyBtn, "Fly")
+setupKeybindButton(noclipKeyBtn, "Noclip")
+
+-- ================= ĐIỀU KHIỂN & SỰ KIỆN NHẬP ================= --
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    -- 1. Đang trong trạng thái chờ gán phím tắt
+    if bindingTarget then
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            if input.KeyCode == Enum.KeyCode.Escape then
+                -- Bấm ESC để hủy gán phím
+                keybinds[bindingTarget] = nil
+                bindingBtn.Text = "None"
+            else
+                -- Gán phím
+                keybinds[bindingTarget] = input.KeyCode
+                bindingBtn.Text = input.KeyCode.Name
+            end
+            bindingTarget = nil
+            bindingBtn = nil
+        end
+        return -- Kết thúc, không xử lý các logic khác bên dưới
+    end
+
+    -- 2. Không nhập text (Chat) thì kiểm tra phím tắt
+    if not gameProcessed then
+        -- Kiểm tra phím tắt gán cho chức năng
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            if input.KeyCode == keybinds["Speed"] then toggleSpeedLogic() end
+            if input.KeyCode == keybinds["Weight"] then toggleWeightLogic() end
+            if input.KeyCode == keybinds["Fly"] then toggleFlyLogic() end
+            if input.KeyCode == keybinds["Noclip"] then toggleNoclipLogic() end
+        end
+
+        -- Đóng/Mở GUI bằng F5 hoặc Pause
+        if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) then
+            if frame.Visible then
+                miniIcon.Position = frame.Position
+                frame.Visible = false
+                miniIcon.Visible = true
+            else
+                frame.Position = miniIcon.Position
+                frame.Visible = true
+                miniIcon.Visible = false
+            end
+        end
+
+        -- Điều khiển Fly lên/xuống
+        if input.KeyCode == Enum.KeyCode.Space then moveY = 1 end
+        if input.KeyCode == Enum.KeyCode.LeftShift then moveY = -1 end
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.LeftShift then
+        moveY = 0
+    end
+end)
+
 -- ================= KÉO THẢ UI ================= --
 local function makeDraggable(dragHandle, targetFrame)
     targetFrame = targetFrame or dragHandle
@@ -395,11 +576,10 @@ loopConnection = RunService.RenderStepped:Connect(function()
             if root then
                 local cam = workspace.CurrentCamera
                 
-                -- CƠ CHẾ BAY MINECRAFT STYLE: Ép phẳng vector của camera
+                -- CƠ CHẾ BAY MINECRAFT STYLE
                 local look = cam.CFrame.LookVector
                 local right = cam.CFrame.RightVector
                 
-                -- Lấy mặt phẳng ngang (X, Z), loại bỏ chiều dọc (Y)
                 local flatLook = Vector3.new(look.X, 0, look.Z)
                 if flatLook.Magnitude > 0 then flatLook = flatLook.Unit end
                 
@@ -408,21 +588,17 @@ loopConnection = RunService.RenderStepped:Connect(function()
                 
                 local dir = Vector3.zero
                 
-                -- Phím điều hướng di chuyển trên mặt phẳng
                 if UIS:IsKeyDown(Enum.KeyCode.W) then dir += flatLook end
                 if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= flatLook end
                 if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= flatRight end
                 if UIS:IsKeyDown(Enum.KeyCode.D) then dir += flatRight end
                 
-                -- Chuẩn hóa lại hướng đi ngang để đi chéo không bị nhanh hơn
                 if dir.Magnitude > 0 then
                     dir = dir.Unit
                 end
                 
-                -- Thêm chiều dọc thông qua phím Space (Up) và Shift (Down)
                 dir += Vector3.new(0, moveY, 0)
                 
-                -- Tổng hợp vận tốc và nhân với Fly Speed
                 if dir.Magnitude > 0 then
                     dir = dir.Unit * flySpeed
                 end
@@ -457,82 +633,7 @@ noclipConnection = RunService.Stepped:Connect(function()
     end
 end)
 
--- ================= ĐIỀU KHIỂN & SỰ KIỆN ================= --
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) and not gameProcessed then
-        if frame.Visible then
-            miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
-            frame.Visible = false
-            miniIcon.Visible = true
-        else
-            frame.Position = miniIcon.Position -- Mở bảng ra đúng vị trí nút sấm sét đang đứng
-            frame.Visible = true
-            miniIcon.Visible = false
-        end
-    end
-
-    if input.KeyCode == Enum.KeyCode.Space then moveY = 1 end
-    if input.KeyCode == Enum.KeyCode.LeftShift then moveY = -1 end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.LeftShift then
-        moveY = 0
-    end
-end)
-
-local function toggleColor(btn, state)
-    btn.BackgroundColor3 = state and Color3.fromRGB(50, 150, 80) or Color3.fromRGB(70, 70, 70)
-end
-
-toggleBtn.MouseButton1Click:Connect(function()
-    enabled = not enabled
-    toggleBtn.Text = enabled and "Speed: ON" or "Speed: OFF"
-    toggleColor(toggleBtn, enabled)
-end)
-
-weightToggle.MouseButton1Click:Connect(function()
-    weightEnabled = not weightEnabled
-    weightToggle.Text = weightEnabled and "Weight: ON" or "Weight: OFF"
-    toggleColor(weightToggle, weightEnabled)
-end)
-
-flyToggle.MouseButton1Click:Connect(function()
-    flyEnabled = not flyEnabled
-    flyToggle.Text = flyEnabled and "Fly: ON" or "Fly: OFF"
-    toggleColor(flyToggle, flyEnabled)
-    if flyEnabled then startFly() else stopFly() end
-end)
-
-noclipToggle.MouseButton1Click:Connect(function()
-    noclipEnabled = not noclipEnabled
-    noclipToggle.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
-    toggleColor(noclipToggle, noclipEnabled)
-    
-    if not noclipEnabled then
-        local char = player.Character
-        if char then
-            local partsToReset = {"HumanoidRootPart", "Head", "Torso", "UpperTorso", "LowerTorso"}
-            for _, name in ipairs(partsToReset) do
-                local part = char:FindFirstChild(name)
-                if part and part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
-            end
-            
-            local hum = char:FindFirstChild("Humanoid")
-            if hum and hum.SeatPart then
-                for _, part in pairs(hum.SeatPart:GetConnectedParts()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = true
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- LOGIC DROPDOWN TELEPORT ĐƯỢC TỐI ƯU HÓA ----------------
+-- LOGIC DROPDOWN TELEPORT ----------------
 local function updatePlayerList()
     for _, child in pairs(playerListFrame:GetChildren()) do
         if child:IsA("TextButton") then child:Destroy() end
@@ -605,21 +706,19 @@ tpBtn.MouseButton1Click:Connect(function()
         end)
     end
 end)
------------------------------------------------------------
 
 -- ĐỒNG BỘ VỊ TRÍ NÚT MINI VÀ BẢNG MENU -----------
 miniBtn.MouseButton1Click:Connect(function()
-    miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
+    miniIcon.Position = frame.Position
     frame.Visible = false
     miniIcon.Visible = true
 end)
 
 miniIcon.MouseButton1Click:Connect(function()
-    frame.Position = miniIcon.Position -- Mở bảng ra đúng vị trí nút sấm sét đang đứng
+    frame.Position = miniIcon.Position
     frame.Visible = true
     miniIcon.Visible = false
 end)
------------------------------------------------------------
 
 closeBtn.MouseButton1Click:Connect(function()
     enabled = false
