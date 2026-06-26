@@ -394,15 +394,35 @@ loopConnection = RunService.RenderStepped:Connect(function()
             local root = getTargetRoot()
             if root then
                 local cam = workspace.CurrentCamera
+                
+                -- CƠ CHẾ BAY MINECRAFT STYLE: Ép phẳng vector của camera
+                local look = cam.CFrame.LookVector
+                local right = cam.CFrame.RightVector
+                
+                -- Lấy mặt phẳng ngang (X, Z), loại bỏ chiều dọc (Y)
+                local flatLook = Vector3.new(look.X, 0, look.Z)
+                if flatLook.Magnitude > 0 then flatLook = flatLook.Unit end
+                
+                local flatRight = Vector3.new(right.X, 0, right.Z)
+                if flatRight.Magnitude > 0 then flatRight = flatRight.Unit end
+                
                 local dir = Vector3.zero
                 
-                if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
+                -- Phím điều hướng di chuyển trên mặt phẳng
+                if UIS:IsKeyDown(Enum.KeyCode.W) then dir += flatLook end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= flatLook end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= flatRight end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then dir += flatRight end
                 
+                -- Chuẩn hóa lại hướng đi ngang để đi chéo không bị nhanh hơn
+                if dir.Magnitude > 0 then
+                    dir = dir.Unit
+                end
+                
+                -- Thêm chiều dọc thông qua phím Space (Up) và Shift (Down)
                 dir += Vector3.new(0, moveY, 0)
                 
+                -- Tổng hợp vận tốc và nhân với Fly Speed
                 if dir.Magnitude > 0 then
                     dir = dir.Unit * flySpeed
                 end
@@ -439,7 +459,6 @@ end)
 
 -- ================= ĐIỀU KHIỂN & SỰ KIỆN ================= --
 UIS.InputBegan:Connect(function(input, gameProcessed)
-    -- Thêm chức năng tắt/bật bằng phím F5 hoặc Pause (bỏ qua khi đang chat/nhập chữ)
     if (input.KeyCode == Enum.KeyCode.F5 or input.KeyCode == Enum.KeyCode.Pause) and not gameProcessed then
         if frame.Visible then
             miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
@@ -572,8 +591,7 @@ tpBtn.MouseButton1Click:Connect(function()
             myRoot.AssemblyLinearVelocity = Vector3.zero
             myRoot.AssemblyAngularVelocity = Vector3.zero
             
-            -- SỬA LẠI THÀNH DÒNG BÊN DƯỚI ĐỂ BAY THẲNG VÀO NGƯỜI MỤC TIÊU
-            myRoot.CFrame = targetCFrame
+            myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
             
             tpBtn.Text = "Teleported!"
             task.delay(1, function()
@@ -589,7 +607,7 @@ tpBtn.MouseButton1Click:Connect(function()
 end)
 -----------------------------------------------------------
 
--- ĐÃ SỬA: ĐỒNG BỘ VỊ TRÍ NÚT MINI VÀ BẢNG MENU -----------
+-- ĐỒNG BỘ VỊ TRÍ NÚT MINI VÀ BẢNG MENU -----------
 miniBtn.MouseButton1Click:Connect(function()
     miniIcon.Position = frame.Position -- Thu nút sấm sét về đúng góc trái của bảng
     frame.Visible = false
