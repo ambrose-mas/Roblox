@@ -97,7 +97,7 @@ applyHover(miniIcon, Colors.Title, Colors.BtnHover)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Colors.Title
-title.Text = " ⚡ Ambrose HUB V4 ⚡ "
+title.Text = " ⚡ Ambrose HUB New ⚡ "
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 15
 title.TextColor3 = Colors.BtnOn
@@ -872,7 +872,7 @@ local introTween1 = TS:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Cubic, 
 })
 
 -- Animation xổ dọc xuống thành bảng điều khiển (Tăng thời gian mở ra lên 1.0 giây)
-local introTween2 = TS:Create(frame, TweenInfo.new(1.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+local introTween2 = TS:Create(frame, TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 520),
     Position = UDim2.new(0.5, -325, 0.5, -260)
 })
@@ -880,6 +880,6 @@ local introTween2 = TS:Create(frame, TweenInfo.new(1.5, Enum.EasingStyle.Quart, 
 -- Chạy chuỗi hiệu ứng
 introTween1:Play()
 introTween1.Completed:Connect(function()
-    task.wait(1.5) -- Thêm độ trễ một xíu xiu để dải laser đọng lại khung hình nhìn cho chất
+    task.wait(0.8) -- Thêm độ trễ một xíu xiu để dải laser đọng lại khung hình nhìn cho chất
     introTween2:Play()
 end)
