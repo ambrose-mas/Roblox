@@ -293,6 +293,7 @@ local infJumpEnabled, fullBrightEnabled, timeEnabled = false, false, false
 local speedValue, weightValue, lowGravValue, flySpeed = 16, 0, 500, 50
 local autoClickCps = 10
 local timeValue = 14
+local originalWalkSpeed = 16 -- LƯU TRỮ TỐC ĐỘ GỐC CỦA GAME
 
 -- CỘT TRÁI (MAIN)
 local _, speedToggle, speedKey = createModule(leftCol, "Speed", 1, function() return enabled end)
@@ -376,6 +377,15 @@ local function toggleSpeed()
     enabled = not enabled
     speedToggle.Text = enabled and "Speed: ON" or "Speed: OFF"
     toggleColor(speedToggle, enabled)
+    
+    local hum = getHumanoid()
+    if hum then
+        if enabled then
+            originalWalkSpeed = hum.WalkSpeed -- Lưu lại tốc độ trước khi bật
+        else
+            hum.WalkSpeed = originalWalkSpeed -- Khôi phục lại tốc độ khi tắt
+        end
+    end
 end
 speedToggle.MouseButton1Click:Connect(toggleSpeed)
 
@@ -557,7 +567,11 @@ timeToggle.MouseButton1Click:Connect(toggleTimeChanger)
 local loopConnection, noclipConnection
 loopConnection = RunService.RenderStepped:Connect(function()
     local root = getTargetRoot(); local hum = getHumanoid()
-    if hum then hum.WalkSpeed = enabled and speedValue or 16 end
+    
+    -- ĐÃ FIX: Chỉ thay đổi tốc độ chạy nếu chức năng Speed ĐANG BẬT
+    if hum and enabled then 
+        hum.WalkSpeed = speedValue 
+    end
     
     if root then
         if weightEnabled then
@@ -860,7 +874,7 @@ closeBtn.MouseButton1Click:Connect(function()
     if noclipConnection then noclipConnection:Disconnect() end
     
     local hum = getHumanoid()
-    if hum then hum.WalkSpeed = 16 end
+    if hum and originalWalkSpeed then hum.WalkSpeed = originalWalkSpeed end
     local root = getTargetRoot()
     if root then
         for _, v in pairs(root:GetChildren()) do
