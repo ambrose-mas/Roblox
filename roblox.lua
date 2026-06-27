@@ -32,7 +32,7 @@ local Colors = {
 
 -- Tạo ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "LuxurySpeedMenu_V4"
+gui.Name = "LuxurySpeedMenu_V5"
 gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
@@ -65,7 +65,6 @@ end
 
 -- ================= MAIN FRAME ================= --
 local frame = Instance.new("Frame")
--- Bắt đầu từ kích thước bằng 0 để chuẩn bị cho hiệu ứng Intro lúc sau
 frame.Size = UDim2.new(0, 0, 0, 0)
 frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.BackgroundColor3 = Colors.Background
@@ -97,7 +96,7 @@ applyHover(miniIcon, Colors.Title, Colors.BtnHover)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Colors.Title
-title.Text = " ⚡ Ambrose HUB New ⚡ "
+title.Text = " ⚡ Ambrose HUB Pro ⚡ "
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 15
 title.TextColor3 = Colors.BtnOn
@@ -137,7 +136,6 @@ miniBtn.Parent = frame
 addCorner(miniBtn, 10)
 miniBtn.MouseEnter:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0, BackgroundColor3 = Colors.BtnHover}):Play() end)
 miniBtn.MouseLeave:Connect(function() TS:Create(miniBtn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end)
-
 
 -- ================= HỆ THỐNG 4 TABS ================= --
 local tabContainer = Instance.new("Frame")
@@ -754,20 +752,37 @@ UIS.InputChanged:Connect(function(input)
 end)
 UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then draggingSlider, draggingWeight, draggingLowGrav, draggingFly, draggingAutoClick, draggingTime = false, false, false, false, false, false end end)
 
-local function attachFocusLost(txtObj, varName, maxVal, handleObj, callback)
+-- FIX LỖI TEXTBOX
+local function setupTextBox(txtObj, maxVal, handleObj, getVal, setVal, isAutoClick)
     txtObj.FocusLost:Connect(function()
-        local num = tonumber(txtObj.Text) or getfenv()[varName]; num = math.clamp(num, 0, maxVal)
-        if varName == "autoClickCps" then num = math.max(1, num) end
-        getfenv()[varName] = math.floor(num); txtObj.Text = tostring(getfenv()[varName]); handleObj.Position = UDim2.new(getfenv()[varName] / maxVal, -8, 0.5, -8)
-        if callback then callback(getfenv()[varName]) end
+        local num = tonumber(txtObj.Text)
+        if not num then num = getVal() end
+        if isAutoClick then
+            num = math.clamp(math.floor(num), 1, maxVal)
+        else
+            num = math.clamp(math.floor(num), 0, maxVal)
+        end
+        setVal(num)
+        txtObj.Text = tostring(num)
+        handleObj.Position = UDim2.new(num / maxVal, -8, 0.5, -8)
     end)
 end
-attachFocusLost(speedTxt, "speedValue", 1000, speedHandle)
-attachFocusLost(weightTxt, "weightValue", 1000, weightHandle)
-attachFocusLost(lowGravTxt, "lowGravValue", 1000, lowGravHandle)
-attachFocusLost(flyTxt, "flySpeed", 1000, flyHandle)
-attachFocusLost(autoClickTxt, "autoClickCps", 50, autoClickHandle)
-attachFocusLost(timeTxt, "timeValue", 24, timeHandle, function(val) if timeEnabled then game.Lighting.ClockTime = val end end)
+
+setupTextBox(speedTxt, 1000, speedHandle, function() return speedValue end, function(v) speedValue = v end)
+setupTextBox(weightTxt, 1000, weightHandle, function() return weightValue end, function(v) weightValue = v end)
+setupTextBox(lowGravTxt, 1000, lowGravHandle, function() return lowGravValue end, function(v) lowGravValue = v end)
+setupTextBox(flyTxt, 1000, flyHandle, function() return flySpeed end, function(v) flySpeed = v end)
+setupTextBox(autoClickTxt, 50, autoClickHandle, function() return autoClickCps end, function(v) autoClickCps = v end, true)
+
+timeTxt.FocusLost:Connect(function()
+    local num = tonumber(timeTxt.Text)
+    if not num then num = timeValue end
+    num = math.clamp(math.floor(num), 0, 24)
+    timeValue = num
+    timeTxt.Text = tostring(num)
+    timeHandle.Position = UDim2.new(num / 24, -8, 0.5, -8)
+    if timeEnabled then game.Lighting.ClockTime = timeValue end
+end)
 
 -- ================= TELEPORT LOGIC ================= --
 local function updatePlayerList()
@@ -859,27 +874,22 @@ closeBtn.MouseButton1Click:Connect(function()
     task.delay(0.35, function() gui:Destroy() end)
 end)
 
-
 -- ================= HIỆU ỨNG MỞ SCRIPT (LUXURY INTRO) ================= --
--- Bước 1: Khởi tạo dạng tia sáng ngang (Chiều dọc rất hẹp)
 frame.Size = UDim2.new(0, 0, 0, 2)
 frame.Position = UDim2.new(0.5, 0, 0.5, -1)
 
--- Animation mở ngang như tia Laser (Tăng thời gian lên 0.8 giây để ngắm cho rõ)
 local introTween1 = TS:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 2),
     Position = UDim2.new(0.5, -325, 0.5, -1)
 })
 
--- Animation xổ dọc xuống thành bảng điều khiển (Tăng thời gian mở ra lên 1.0 giây)
-local introTween2 = TS:Create(frame, TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+local introTween2 = TS:Create(frame, TweenInfo.new(1.0, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 520),
     Position = UDim2.new(0.5, -325, 0.5, -260)
 })
 
--- Chạy chuỗi hiệu ứng
 introTween1:Play()
 introTween1.Completed:Connect(function()
-    task.wait(0.8) -- Thêm độ trễ một xíu xiu để dải laser đọng lại khung hình nhìn cho chất
+    task.wait(0.2) 
     introTween2:Play()
 end)
