@@ -878,18 +878,18 @@ end)
 frame.Size = UDim2.new(0, 0, 0, 2)
 frame.Position = UDim2.new(0.5, 0, 0.5, -1)
 
-local introTween1 = TS:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+local introTween1 = TS:Create(frame, TweenInfo.new(1.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 2),
     Position = UDim2.new(0.5, -325, 0.5, -1)
 })
 
-local introTween2 = TS:Create(frame, TweenInfo.new(1.0, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+local introTween2 = TS:Create(frame, TweenInfo.new(1.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 520),
     Position = UDim2.new(0.5, -325, 0.5, -260)
 })
 
 introTween1:Play()
 introTween1.Completed:Connect(function()
-    task.wait(0.2) 
+    task.wait(0.8) 
     introTween2:Play()
 end)
