@@ -307,7 +307,7 @@ local _, noclipToggle, noclipKey = createModule(leftCol, "Noclip", 7, function()
 local _, flyToggle, flyKey = createModule(rightCol, "Fly", 1, function() return flyEnabled end)
 local _, flyBar, flyHandle, flyTxt = createSlider(rightCol, 2, 50, 1000)
 local _, autoClickToggle, autoClickKey = createModule(rightCol, "Auto Click", 3, function() return autoClickEnabled end)
-local _, autoClickBar, autoClickHandle, autoClickTxt = createSlider(rightCol, 4, 10, 50) 
+local _, autoClickBar, autoClickHandle, autoClickTxt = createSlider(rightCol, 4, 10, 5000) 
 local _, espToggle, espKey = createModule(rightCol, "ESP (Name/Dist)", 5, function() return espEnabled end)
 local _, fogToggle, fogKey = createModule(rightCol, "Remove Fog", 6, function() return fogEnabled end)
 
@@ -741,7 +741,7 @@ UIS.InputChanged:Connect(function(input)
         end
         if draggingAutoClick then
             local p = math.clamp((input.Position.X - autoClickBar.AbsolutePosition.X)/autoClickBar.AbsoluteSize.X, 0, 1)
-            autoClickCps = math.max(1, math.floor(p * 50)); autoClickHandle.Position = UDim2.new(autoClickCps / 50, -8, 0.5, -8); autoClickTxt.Text = tostring(autoClickCps)
+            autoClickCps = math.max(1, math.floor(p * 5000)); autoClickHandle.Position = UDim2.new(autoClickCps / 5000, -8, 0.5, -8); autoClickTxt.Text = tostring(autoClickCps)
         end
         if draggingTime then
             local p = math.clamp((input.Position.X - timeBar.AbsolutePosition.X)/timeBar.AbsoluteSize.X, 0, 1)
@@ -772,7 +772,7 @@ setupTextBox(speedTxt, 1000, speedHandle, function() return speedValue end, func
 setupTextBox(weightTxt, 1000, weightHandle, function() return weightValue end, function(v) weightValue = v end)
 setupTextBox(lowGravTxt, 1000, lowGravHandle, function() return lowGravValue end, function(v) lowGravValue = v end)
 setupTextBox(flyTxt, 1000, flyHandle, function() return flySpeed end, function(v) flySpeed = v end)
-setupTextBox(autoClickTxt, 50, autoClickHandle, function() return autoClickCps end, function(v) autoClickCps = v end, true)
+setupTextBox(autoClickTxt, 5000, autoClickHandle, function() return autoClickCps end, function(v) autoClickCps = v end, true)
 
 timeTxt.FocusLost:Connect(function()
     local num = tonumber(timeTxt.Text)
