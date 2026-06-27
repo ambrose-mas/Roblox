@@ -865,14 +865,14 @@ end)
 frame.Size = UDim2.new(0, 0, 0, 2)
 frame.Position = UDim2.new(0.5, 0, 0.5, -1)
 
--- Animation mở ngang như tia Laser
-local introTween1 = TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+-- Animation mở ngang như tia Laser (Tăng thời gian lên 0.8 giây để ngắm cho rõ)
+local introTween1 = TS:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 2),
     Position = UDim2.new(0.5, -325, 0.5, -1)
 })
 
--- Animation xổ dọc xuống thành bảng điều khiển
-local introTween2 = TS:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+-- Animation xổ dọc xuống thành bảng điều khiển (Tăng thời gian mở ra lên 1.0 giây)
+local introTween2 = TS:Create(frame, TweenInfo.new(1.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
     Size = UDim2.new(0, 650, 0, 520),
     Position = UDim2.new(0.5, -325, 0.5, -260)
 })
@@ -880,5 +880,6 @@ local introTween2 = TS:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, 
 -- Chạy chuỗi hiệu ứng
 introTween1:Play()
 introTween1.Completed:Connect(function()
+    task.wait(1.5) -- Thêm độ trễ một xíu xiu để dải laser đọng lại khung hình nhìn cho chất
     introTween2:Play()
 end)
