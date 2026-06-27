@@ -58,8 +58,8 @@ end
 
 -- ================= MAIN FRAME ================= --
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 420, 0, 530)
-frame.Position = UDim2.new(0.5, -210, 0.5, -265)
+frame.Size = UDim2.new(0, 420, 0, 610) 
+frame.Position = UDim2.new(0.5, -210, 0.5, -305)
 frame.BackgroundColor3 = Colors.Background
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -92,7 +92,7 @@ applyHover(miniIcon, Colors.Title, Colors.BtnHover)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Colors.Title
-title.Text = " ⚡ Ambrose HUB ⚡ "
+title.Text = " ⚡ LUXURY HUB ⚡ "
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 15
 title.TextColor3 = Colors.BtnOn
@@ -236,8 +236,9 @@ tabProfileBtn.MouseButton1Click:Connect(function() switchTab(3) end)
 
 
 -- ================= LOGIC BIẾN ================= --
-local enabled, weightEnabled, flyEnabled, noclipEnabled = false, false, false, false
-local speedValue, weightValue, flySpeed = 16, 0, 50
+local enabled, weightEnabled, lowGravEnabled, flyEnabled, noclipEnabled = false, false, false, false, false
+-- Mặc định trị số lowGravValue = 500
+local speedValue, weightValue, lowGravValue, flySpeed = 16, 0, 500, 50
 
 -- ================= UI: PAGE MAIN ================= --
 local mainLayout = Instance.new("UIListLayout")
@@ -299,7 +300,6 @@ local function createSlider(name, order, defaultVal, maxVal)
     handle.Parent = bar
     addCorner(handle, 100)
 
-    -- SỬ DỤNG TEXTBOX THAY VÌ TEXTLABEL
     local txt = Instance.new("TextBox")
     txt.Size = UDim2.new(0.25, 0, 1, 0)
     txt.Position = UDim2.new(0.75, 0, 0, 0)
@@ -320,34 +320,40 @@ speedMod.Parent = pageMain
 local speedSliderMod, speedBar, speedHandle, speedTxt = createSlider("Speed", 2, 16, 1000)
 speedSliderMod.Parent = pageMain
 
--- Weight
+-- Weight (Làm nặng)
 local weightMod, weightToggle, weightKey = createModule("Weight", 3, function() return weightEnabled end)
 weightMod.Parent = pageMain
 local weightSliderMod, weightBar, weightHandle, weightTxt = createSlider("Weight", 4, 0, 1000)
 weightSliderMod.Parent = pageMain
 
+-- Low Grav (Làm nhẹ) MAX 1000
+local lowGravMod, lowGravToggle, lowGravKey = createModule("Low Grav", 5, function() return lowGravEnabled end)
+lowGravMod.Parent = pageMain
+local lowGravSliderMod, lowGravBar, lowGravHandle, lowGravTxt = createSlider("Low Grav", 6, 500, 1000) 
+lowGravSliderMod.Parent = pageMain
+
 -- Fly
-local flyMod, flyToggle, flyKey = createModule("Fly", 5, function() return flyEnabled end)
+local flyMod, flyToggle, flyKey = createModule("Fly", 7, function() return flyEnabled end)
 flyMod.Parent = pageMain
-local flySliderMod, flyBar, flyHandle, flyTxt = createSlider("Fly", 6, 50, 1000)
+local flySliderMod, flyBar, flyHandle, flyTxt = createSlider("Fly", 8, 50, 1000)
 flySliderMod.Parent = pageMain
 
 -- Noclip
-local noclipMod, noclipToggle, noclipKey = createModule("Noclip", 7, function() return noclipEnabled end)
+local noclipMod, noclipToggle, noclipKey = createModule("Noclip", 9, function() return noclipEnabled end)
 noclipMod.Parent = pageMain
 
 -- Khoảng trống
 local spacer = Instance.new("Frame")
 spacer.Size = UDim2.new(1, 0, 0, 5)
 spacer.BackgroundTransparency = 1
-spacer.LayoutOrder = 8
+spacer.LayoutOrder = 10
 spacer.Parent = pageMain
 
 -- Teleport Tool
 local tpFrame = Instance.new("Frame")
 tpFrame.Size = UDim2.new(0.9, 0, 0, 36)
 tpFrame.BackgroundTransparency = 1
-tpFrame.LayoutOrder = 9
+tpFrame.LayoutOrder = 11
 tpFrame.Parent = pageMain
 
 local tpDropdownBtn = Instance.new("TextButton")
@@ -385,8 +391,9 @@ tpBtn.Parent = tpFrame
 addCorner(tpBtn, 6)
 applyHover(tpBtn, Colors.OrangeBtn, Colors.OrangeBtnHover)
 
+-- Dropdown
 playerListFrame.Size = UDim2.new(0.55, 0, 0, 120)
-playerListFrame.Position = UDim2.new(0.05, 0, 0, 380)
+playerListFrame.Position = UDim2.new(0.05, 0, 0, 475)
 playerListFrame.BackgroundColor3 = Colors.Title
 playerListFrame.BorderSizePixel = 0
 playerListFrame.Visible = false
@@ -502,9 +509,9 @@ addStatText(0.5, "Account Age:", tostring(player.AccountAge) .. " Days")
 
 
 -- ================= LOGIC ĐIỀU KHIỂN & CHỨC NĂNG ================= --
-local draggingSlider, draggingWeight, draggingFly = false, false, false
-local weightForce, flyVelocity, moveY = nil, nil, 0
-local keybinds = { Speed = nil, Weight = nil, Fly = nil, Noclip = nil }
+local draggingSlider, draggingWeight, draggingLowGrav, draggingFly = false, false, false, false
+local weightForce, lowGravForce, flyVelocity, moveY = nil, nil, nil, 0
+local keybinds = { Speed = nil, Weight = nil, LowGrav = nil, Fly = nil, Noclip = nil }
 local bindingTarget, bindingBtn = nil, nil
 
 local function getHumanoid()
@@ -544,6 +551,37 @@ local function removeWeight()
     if weightForce then weightForce:Destroy(); weightForce = nil end
 end
 
+-- LOGIC LOW GRAV MỚI: Chỉ giảm tốc độ rơi, không làm nhảy cao
+local function applyLowGrav()
+    local root = getTargetRoot()
+    if not root then return end
+    if not lowGravForce or lowGravForce.Parent ~= root then
+        if lowGravForce then pcall(function() lowGravForce:Destroy() end) end
+        local att = root:FindFirstChild("LowGravAttachment")
+        if not att then
+            att = Instance.new("Attachment", root)
+            att.Name = "LowGravAttachment"
+        end
+        lowGravForce = Instance.new("VectorForce")
+        lowGravForce.Attachment0 = att
+        lowGravForce.RelativeTo = Enum.ActuatorRelativeTo.World
+        lowGravForce.Parent = root
+    end
+    
+    -- Kiểm tra nếu người chơi ĐANG RƠI XUỐNG (vận tốc Y < 0)
+    if root.AssemblyLinearVelocity.Y < 0 then
+        -- Lực đẩy ngược lên chống lại trọng lực (Tỉ lệ 0 -> 1000)
+        lowGravForce.Force = Vector3.new(0, workspace.Gravity * root.AssemblyMass * (lowGravValue / 1000), 0)
+    else
+        -- Nếu đang đứng yên hoặc nhảy lên trên thì hủy lực đẩy để nhảy đúng độ cao gốc
+        lowGravForce.Force = Vector3.new(0, 0, 0)
+    end
+end
+
+local function removeLowGrav()
+    if lowGravForce then lowGravForce:Destroy(); lowGravForce = nil end
+end
+
 local function startFly()
     local root = getTargetRoot()
     if not root then return end
@@ -575,6 +613,12 @@ local function toggleWeightLogic()
     weightEnabled = not weightEnabled
     weightToggle.Text = weightEnabled and "Weight: ON" or "Weight: OFF"
     toggleColor(weightToggle, weightEnabled)
+end
+
+local function toggleLowGravLogic()
+    lowGravEnabled = not lowGravEnabled
+    lowGravToggle.Text = lowGravEnabled and "Low Grav: ON" or "Low Grav: OFF"
+    toggleColor(lowGravToggle, lowGravEnabled)
 end
 
 local function toggleFlyLogic()
@@ -609,6 +653,7 @@ end
 
 speedToggle.MouseButton1Click:Connect(toggleSpeedLogic)
 weightToggle.MouseButton1Click:Connect(toggleWeightLogic)
+lowGravToggle.MouseButton1Click:Connect(toggleLowGravLogic)
 flyToggle.MouseButton1Click:Connect(toggleFlyLogic)
 noclipToggle.MouseButton1Click:Connect(toggleNoclipLogic)
 
@@ -622,6 +667,7 @@ end
 
 setupKeybindButton(speedKey, "Speed")
 setupKeybindButton(weightKey, "Weight")
+setupKeybindButton(lowGravKey, "LowGrav")
 setupKeybindButton(flyKey, "Fly")
 setupKeybindButton(noclipKey, "Noclip")
 
@@ -631,7 +677,7 @@ local function toggleMenu()
         miniIcon.Position = frame.Position
         TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
         task.delay(0.3, function()
-            frame.Visible = false; frame.Size = UDim2.new(0, 420, 0, 530)
+            frame.Visible = false; frame.Size = UDim2.new(0, 420, 0, 610)
             miniIcon.Visible = true; miniIcon.Size = UDim2.new(0, 0, 0, 0)
             TS:Create(miniIcon, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 45, 0, 45)}):Play()
         end)
@@ -641,7 +687,7 @@ local function toggleMenu()
         task.delay(0.2, function()
             miniIcon.Visible = false; miniIcon.Size = UDim2.new(0, 45, 0, 45)
             frame.Visible = true; frame.Size = UDim2.new(0, 0, 0, 0)
-            TS:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 420, 0, 530)}):Play()
+            TS:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 420, 0, 610)}):Play()
         end)
     end
 end
@@ -684,6 +730,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         if input.UserInputType == Enum.UserInputType.Keyboard then
             if input.KeyCode == keybinds["Speed"] then toggleSpeedLogic() end
             if input.KeyCode == keybinds["Weight"] then toggleWeightLogic() end
+            if input.KeyCode == keybinds["LowGrav"] then toggleLowGravLogic() end
             if input.KeyCode == keybinds["Fly"] then toggleFlyLogic() end
             if input.KeyCode == keybinds["Noclip"] then toggleNoclipLogic() end
         end
@@ -731,6 +778,7 @@ loopConnection = RunService.RenderStepped:Connect(function()
     local hum = getHumanoid()
     if hum then hum.WalkSpeed = enabled and speedValue or 16 end
     if weightEnabled then applyWeight() else removeWeight() end
+    if lowGravEnabled then applyLowGrav() else removeLowGrav() end
     
     if flyEnabled then
         startFly() 
@@ -893,9 +941,9 @@ end)
 
 
 closeBtn.MouseButton1Click:Connect(function()
-    enabled = false; weightEnabled = false; flyEnabled = false; noclipEnabled = false
+    enabled = false; weightEnabled = false; lowGravEnabled = false; flyEnabled = false; noclipEnabled = false
     local hum = getHumanoid(); if hum then hum.WalkSpeed = 16 end
-    removeWeight(); stopFly()
+    removeWeight(); removeLowGrav(); stopFly()
     
     local char = player.Character
     if char then
@@ -920,6 +968,7 @@ end)
 -- ================= XỬ LÝ SLIDERS (KÉO & NHẬP SỐ) ================= --
 speedBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingSlider = true end end)
 weightBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingWeight = true end end)
+lowGravBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingLowGrav = true end end)
 flyBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then draggingFly = true end end)
 
 UIS.InputChanged:Connect(function(input)
@@ -932,6 +981,11 @@ UIS.InputChanged:Connect(function(input)
             local p = math.clamp((input.Position.X - weightBar.AbsolutePosition.X)/weightBar.AbsoluteSize.X, 0, 1)
             weightHandle.Position = UDim2.new(p, -8, 0.5, -8); weightValue = math.floor(p * 1000); weightTxt.Text = tostring(weightValue)
         end
+        if draggingLowGrav then
+            local p = math.clamp((input.Position.X - lowGravBar.AbsolutePosition.X)/lowGravBar.AbsoluteSize.X, 0, 1)
+            -- Sửa thanh trượt thành max 1000
+            lowGravHandle.Position = UDim2.new(p, -8, 0.5, -8); lowGravValue = math.floor(p * 1000); lowGravTxt.Text = tostring(lowGravValue)
+        end
         if draggingFly then
             local p = math.clamp((input.Position.X - flyBar.AbsolutePosition.X)/flyBar.AbsoluteSize.X, 0, 1)
             flyHandle.Position = UDim2.new(p, -8, 0.5, -8); flySpeed = math.floor(p * 1000); flyTxt.Text = tostring(flySpeed)
@@ -941,7 +995,7 @@ end)
 
 UIS.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        draggingSlider = false; draggingWeight = false; draggingFly = false
+        draggingSlider = false; draggingWeight = false; draggingLowGrav = false; draggingFly = false
     end
 end)
 
@@ -962,6 +1016,16 @@ weightTxt.FocusLost:Connect(function()
     weightValue = math.floor(num)
     weightTxt.Text = tostring(weightValue)
     weightHandle.Position = UDim2.new(weightValue / 1000, -8, 0.5, -8)
+end)
+
+lowGravTxt.FocusLost:Connect(function()
+    local num = tonumber(lowGravTxt.Text)
+    if not num then num = lowGravValue end
+    -- Cho phép max là 1000
+    num = math.clamp(num, 0, 1000)
+    lowGravValue = math.floor(num)
+    lowGravTxt.Text = tostring(lowGravValue)
+    lowGravHandle.Position = UDim2.new(lowGravValue / 1000, -8, 0.5, -8)
 end)
 
 flyTxt.FocusLost:Connect(function()
