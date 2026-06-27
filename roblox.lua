@@ -65,8 +65,9 @@ end
 
 -- ================= MAIN FRAME ================= --
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 650, 0, 520)
-frame.Position = UDim2.new(0.5, -325, 0.5, -260)
+-- Bắt đầu từ kích thước bằng 0 để chuẩn bị cho hiệu ứng Intro lúc sau
+frame.Size = UDim2.new(0, 0, 0, 0)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.BackgroundColor3 = Colors.Background
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -359,7 +360,7 @@ end
 addStatText(0, "User ID:", tostring(player.UserId)); addStatText(0.5, "Account Age:", tostring(player.AccountAge) .. " Days")
 
 
--- ================= CHUẨN HOÁ LOGIC CÁC HÀM TOGGLE (QUAN TRỌNG ĐỂ FIX LỖI KEYBIND & DỌN DẸP) ================= --
+-- ================= CHUẨN HOÁ LOGIC CÁC HÀM TOGGLE ================= --
 local draggingSlider, draggingWeight, draggingLowGrav, draggingFly, draggingTime, draggingAutoClick = false, false, false, false, false, false
 local weightForce, lowGravForce, flyVelocity, moveY = nil, nil, nil, 0
 local keybinds = {}
@@ -373,7 +374,6 @@ local function getTargetRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 
--- SPEED
 local function toggleSpeed()
     enabled = not enabled
     speedToggle.Text = enabled and "Speed: ON" or "Speed: OFF"
@@ -381,7 +381,6 @@ local function toggleSpeed()
 end
 speedToggle.MouseButton1Click:Connect(toggleSpeed)
 
--- WEIGHT
 local function toggleWeight()
     weightEnabled = not weightEnabled
     weightToggle.Text = weightEnabled and "Weight: ON" or "Weight: OFF"
@@ -389,7 +388,6 @@ local function toggleWeight()
 end
 weightToggle.MouseButton1Click:Connect(toggleWeight)
 
--- LOW GRAV
 local function toggleLowGrav()
     lowGravEnabled = not lowGravEnabled
     lowGravToggle.Text = lowGravEnabled and "Low Grav: ON" or "Low Grav: OFF"
@@ -397,7 +395,6 @@ local function toggleLowGrav()
 end
 lowGravToggle.MouseButton1Click:Connect(toggleLowGrav)
 
--- NOCLIP
 local function toggleNoclip()
     noclipEnabled = not noclipEnabled
     noclipToggle.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
@@ -410,7 +407,6 @@ local function toggleNoclip()
 end
 noclipToggle.MouseButton1Click:Connect(toggleNoclip)
 
--- FLY
 local function toggleFly()
     flyEnabled = not flyEnabled
     flyToggle.Text = flyEnabled and "Fly: ON" or "Fly: OFF"
@@ -428,7 +424,6 @@ local function toggleFly()
 end
 flyToggle.MouseButton1Click:Connect(toggleFly)
 
--- AUTO CLICK
 local function toggleAutoClick()
     autoClickEnabled = not autoClickEnabled
     autoClickToggle.Text = autoClickEnabled and "Auto Click: ON" or "Auto Click: OFF"
@@ -449,7 +444,6 @@ task.spawn(function()
     end
 end)
 
--- ESP
 local espLoop
 local function clearESP()
     for _, p in pairs(game.Players:GetPlayers()) do
@@ -489,7 +483,6 @@ local function toggleESP()
 end
 espToggle.MouseButton1Click:Connect(toggleESP)
 
--- REMOVE FOG
 local originalFogEnd = game.Lighting.FogEnd
 local originalFogStart = game.Lighting.FogStart
 local function toggleFog()
@@ -505,7 +498,6 @@ local function toggleFog()
 end
 fogToggle.MouseButton1Click:Connect(toggleFog)
 
--- INFINITE JUMP
 local function toggleInfJump()
     infJumpEnabled = not infJumpEnabled
     infJumpToggle.Text = infJumpEnabled and "Infinite Jump: ON" or "Infinite Jump: OFF"
@@ -520,7 +512,6 @@ UIS.JumpRequest:Connect(function()
     end
 end)
 
--- FULL BRIGHT
 local brightLoop
 local savedLighting = {}
 local function toggleFullBright()
@@ -547,7 +538,6 @@ local function toggleFullBright()
 end
 fullBrightToggle.MouseButton1Click:Connect(toggleFullBright)
 
--- TIME CHANGER
 local timeLoop
 local savedTime = game.Lighting.ClockTime
 local function toggleTimeChanger()
@@ -804,7 +794,8 @@ tpBtn.MouseButton1Click:Connect(function()
         local myRoot = getTargetRoot()
         if targetCFrame and myRoot then
             myRoot.AssemblyLinearVelocity = Vector3.zero; myRoot.AssemblyAngularVelocity = Vector3.zero
-            myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3); tpBtn.Text = "Đã dịch chuyển!"
+            myRoot.CFrame = targetCFrame * CFrame.new(0, 3, 3)
+            tpBtn.Text = "Đã dịch chuyển!"
             task.delay(1, function() if tpBtn then tpBtn.Text = "Teleport" end end)
         end
     else
@@ -836,9 +827,8 @@ copyJobBtn.MouseButton1Click:Connect(function() if setclipboard then setclipboar
 
 -- ================= SỰ KIỆN DỌN DẸP SẠCH SẼ KHI TẮT SCRIPT ================= --
 closeBtn.MouseButton1Click:Connect(function()
-    isScriptActive = false -- Hủy các luồng ngầm (Auto Clicker)
+    isScriptActive = false 
     
-    -- An toàn tắt từng chức năng nếu đang bật (Để khôi phục trạng thái ban đầu)
     if enabled then toggleSpeed() end
     if weightEnabled then toggleWeight() end
     if lowGravEnabled then toggleLowGrav() end
@@ -851,11 +841,9 @@ closeBtn.MouseButton1Click:Connect(function()
     if fullBrightEnabled then toggleFullBright() end
     if timeEnabled then toggleTimeChanger() end
 
-    -- Ngắt kết nối các sự kiện còn sót
     if loopConnection then loopConnection:Disconnect() end
     if noclipConnection then noclipConnection:Disconnect() end
     
-    -- Dọn sạch tàn dư vật lý
     local hum = getHumanoid()
     if hum then hum.WalkSpeed = 16 end
     local root = getTargetRoot()
@@ -867,7 +855,30 @@ closeBtn.MouseButton1Click:Connect(function()
         end
     end
     
-    -- Xóa UI mượt mà
     TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
     task.delay(0.35, function() gui:Destroy() end)
+end)
+
+
+-- ================= HIỆU ỨNG MỞ SCRIPT (LUXURY INTRO) ================= --
+-- Bước 1: Khởi tạo dạng tia sáng ngang (Chiều dọc rất hẹp)
+frame.Size = UDim2.new(0, 0, 0, 2)
+frame.Position = UDim2.new(0.5, 0, 0.5, -1)
+
+-- Animation mở ngang như tia Laser
+local introTween1 = TS:Create(frame, TweenInfo.new(0.35, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 650, 0, 2),
+    Position = UDim2.new(0.5, -325, 0.5, -1)
+})
+
+-- Animation xổ dọc xuống thành bảng điều khiển
+local introTween2 = TS:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 650, 0, 520),
+    Position = UDim2.new(0.5, -325, 0.5, -260)
+})
+
+-- Chạy chuỗi hiệu ứng
+introTween1:Play()
+introTween1.Completed:Connect(function()
+    introTween2:Play()
 end)
