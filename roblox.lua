@@ -96,7 +96,7 @@ applyHover(miniIcon, Colors.Title, Colors.BtnHover)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Colors.Title
-title.Text = " ⚡ LUXURY HUB V4 ⚡ "
+title.Text = " ⚡ Ambrose HUB V4 ⚡ "
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 15
 title.TextColor3 = Colors.BtnOn
